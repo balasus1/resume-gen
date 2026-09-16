@@ -3,6 +3,7 @@ import {
   FeaturePromptsError,
   PROVIDER_INFO,
   fetchFeatureConfig,
+  fetchLanguageConfig,
   updateFeatureConfig,
   updateFeaturePrompts,
   updateLlmConfig,
@@ -167,6 +168,30 @@ describe('updateLlmConfig error surfacing', () => {
     );
 
     await expect(updateLlmConfig({ provider: 'openai' })).rejects.toThrow('plain failure');
+
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('fetchLanguageConfig', () => {
+  it('surfaces backend detail error message on failure', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify({ detail: 'Server database unreadable' }), { status: 500 }))
+    );
+
+    await expect(fetchLanguageConfig()).rejects.toThrow('Server database unreadable');
+
+    vi.unstubAllGlobals();
+  });
+
+  it('falls back to status message if no detail is returned', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('Internal error', { status: 500 }))
+    );
+
+    await expect(fetchLanguageConfig()).rejects.toThrow('Failed to load language config (status 500).');
 
     vi.unstubAllGlobals();
   });

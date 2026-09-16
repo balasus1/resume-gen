@@ -299,22 +299,10 @@ class Database:
         original_markdown: str | None = None,
         title: str | None = None,
         interview_prep: str | None = None,
+        is_master: bool = True,
     ) -> dict[str, Any]:
-        """Create a resume and replace a failed master in one transaction."""
+        """Create a master resume document."""
         async with self._write_session() as session:
-            current_master = (
-                await session.execute(select(Resume).where(Resume.is_master.is_(True)))
-            ).scalar_one_or_none()
-            is_master = current_master is None
-            if current_master and current_master.processing_status in (
-                "failed",
-                "processing",
-            ):
-                current_master.is_master = False
-                # Release the partial unique-index slot within this transaction.
-                # An insertion failure still rolls this demotion back.
-                await session.flush()
-                is_master = True
             row = self._new_resume(
                 content=content,
                 content_type=content_type,
@@ -339,10 +327,10 @@ class Database:
             return self._resume_to_dict(row) if row else None
 
     async def get_master_resume(self) -> dict[str, Any] | None:
-        """Get the master resume if exists."""
+        """Get the latest master resume if exists."""
         async with self._session() as session:
             result = await session.execute(
-                select(Resume).where(Resume.is_master.is_(True))
+                select(Resume).where(Resume.is_master.is_(True)).order_by(Resume.created_at.desc())
             )
             row = result.scalars().first()
             return self._resume_to_dict(row) if row else None

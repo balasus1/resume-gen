@@ -77,6 +77,20 @@ def _coerce_optional_text(value: Any) -> str | None:
     return text or None
 
 
+def _coerce_id(value: Any) -> int:
+    """Coerce an identifier value into an integer safely."""
+    if value is None:
+        return 0
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        try:
+            return int(value.strip())
+        except ValueError:
+            return 0
+    return 0
+
+
 def _split_description_lines(value: str) -> list[str]:
     """Split a description block into clean bullet lines."""
     items: list[str] = []
@@ -141,6 +155,14 @@ class SectionType(str, Enum):
 
 
 # Resume Data Models (matching frontend types in resume-component.tsx)
+DEFAULT_EMAIL = "bala.s0027@gmail.com"
+DEFAULT_PHONE = "+91-8884907414"
+DEFAULT_LOCATION = "Pondicherry"
+DEFAULT_WEBSITE = "https://portfolio.balashan.dev"
+DEFAULT_LINKEDIN = "https://www.linkedin.com/in/spike0027"
+DEFAULT_GITHUB = "https://github.com/balasus1"
+
+
 class PersonalInfo(BaseModel):
     """Personal information section."""
 
@@ -153,6 +175,16 @@ class PersonalInfo(BaseModel):
     linkedin: str | None = None
     github: str | None = None
 
+    @field_validator("name", "title", "email", "phone", "location", mode="before")
+    @classmethod
+    def _normalize_text_fields(cls, value: Any) -> str:
+        return _coerce_text(value)
+
+    @field_validator("website", "linkedin", "github", mode="before")
+    @classmethod
+    def _normalize_optional_text_fields(cls, value: Any) -> str | None:
+        return _coerce_optional_text(value)
+
 
 class Experience(BaseModel):
     """Work experience entry."""
@@ -164,6 +196,21 @@ class Experience(BaseModel):
     years: str = ""
     description: list[str] = Field(default_factory=list)
     descriptionStyles: list[Literal["bullet", "plain"]] = Field(default_factory=list)
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def _normalize_id(cls, value: Any) -> int:
+        return _coerce_id(value)
+
+    @field_validator("title", "company", "years", mode="before")
+    @classmethod
+    def _normalize_text_fields(cls, value: Any) -> str:
+        return _coerce_text(value)
+
+    @field_validator("location", mode="before")
+    @classmethod
+    def _normalize_location(cls, value: Any) -> str | None:
+        return _coerce_optional_text(value)
 
     @field_validator("description", mode="before")
     @classmethod
@@ -194,6 +241,16 @@ class Education(BaseModel):
     years: str = ""
     description: str | None = None
 
+    @field_validator("id", mode="before")
+    @classmethod
+    def _normalize_id(cls, value: Any) -> int:
+        return _coerce_id(value)
+
+    @field_validator("institution", "degree", "years", mode="before")
+    @classmethod
+    def _normalize_text_fields(cls, value: Any) -> str:
+        return _coerce_text(value)
+
     @field_validator("description", mode="before")
     @classmethod
     def _normalize_description(cls, value: Any) -> str | None:
@@ -211,6 +268,21 @@ class Project(BaseModel):
     website: str | None = None
     description: list[str] = Field(default_factory=list)
     descriptionStyles: list[Literal["bullet", "plain"]] = Field(default_factory=list)
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def _normalize_id(cls, value: Any) -> int:
+        return _coerce_id(value)
+
+    @field_validator("name", "role", "years", mode="before")
+    @classmethod
+    def _normalize_text_fields(cls, value: Any) -> str:
+        return _coerce_text(value)
+
+    @field_validator("github", "website", mode="before")
+    @classmethod
+    def _normalize_links(cls, value: Any) -> str | None:
+        return _coerce_optional_text(value)
 
     @field_validator("description", mode="before")
     @classmethod
@@ -275,6 +347,21 @@ class CustomSectionItem(BaseModel):
     years: str = ""
     description: list[str] = Field(default_factory=list)
     descriptionStyles: list[Literal["bullet", "plain"]] = Field(default_factory=list)
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def _normalize_id(cls, value: Any) -> int:
+        return _coerce_id(value)
+
+    @field_validator("title", "years", mode="before")
+    @classmethod
+    def _normalize_text_fields(cls, value: Any) -> str:
+        return _coerce_text(value)
+
+    @field_validator("subtitle", "location", mode="before")
+    @classmethod
+    def _normalize_optional_fields(cls, value: Any) -> str | None:
+        return _coerce_optional_text(value)
 
     @field_validator("description", mode="before")
     @classmethod
@@ -425,6 +512,24 @@ class ResumeData(BaseModel):
     @classmethod
     def _normalize_summary(cls, value: Any) -> str:
         return _coerce_text(value)
+
+    @field_validator(
+        "workExperience", "education", "personalProjects", "sectionMeta", mode="before"
+    )
+    @classmethod
+    def _normalize_list_sections(cls, value: Any) -> Any:
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return [item for item in value if item is not None]
+        return value
+
+    @field_validator("personalInfo", "additional", "customSections", mode="before")
+    @classmethod
+    def _normalize_dict_sections(cls, value: Any) -> Any:
+        if value is None:
+            return {}
+        return value
 
 
 # API Response Models

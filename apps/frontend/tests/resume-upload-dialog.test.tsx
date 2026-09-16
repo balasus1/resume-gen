@@ -128,6 +128,42 @@ describe('ResumeUploadDialog upload propagation', () => {
     expect(onUploadComplete).toHaveBeenCalledTimes(1);
     expect(onOpenChange).not.toHaveBeenCalled();
   });
+
+  it('supports selecting and uploading multiple resumes concurrently in parallel', async () => {
+    vi.useFakeTimers();
+    const onUploadComplete = vi.fn();
+    const onOpenChange = vi.fn();
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(uploadResponse('resume-fullstack'))
+      .mockResolvedValueOnce(uploadResponse('resume-frontend'))
+      .mockResolvedValueOnce(uploadResponse('resume-backend'));
+
+    render(
+      <ResumeUploadDialog open onOpenChange={onOpenChange} onUploadComplete={onUploadComplete} />
+    );
+
+    const input = document.querySelector<HTMLInputElement>('input[type="file"]');
+    expect(input).not.toBeNull();
+    expect(input).toHaveAttribute('multiple');
+
+    fireEvent.change(input!, {
+      target: {
+        files: [
+          new File(['fullstack resume'], 'fullstack.pdf', { type: 'application/pdf' }),
+          new File(['frontend resume'], 'frontend.pdf', { type: 'application/pdf' }),
+          new File(['backend resume'], 'backend.pdf', { type: 'application/pdf' }),
+        ],
+      },
+    });
+
+    await vi.waitFor(() => {
+      expect(onUploadComplete).toHaveBeenCalledWith('resume-fullstack');
+      expect(onUploadComplete).toHaveBeenCalledWith('resume-frontend');
+      expect(onUploadComplete).toHaveBeenCalledWith('resume-backend');
+    });
+
+    expect(onUploadComplete).toHaveBeenCalledTimes(3);
+  });
 });
 
 it('keeps a second upload open beyond the previous success timer', async () => {

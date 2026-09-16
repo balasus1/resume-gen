@@ -53,14 +53,10 @@ class Resume(Base):
     updated_at: Mapped[str] = mapped_column(String, default=_utcnow_iso)
 
     __table_args__ = (
-        # At most one master resume. Partial unique index enforces the invariant
-        # at the storage layer; the facade serializes compound designation
-        # changes with a SQLite writer transaction.
         Index(
-            "ux_resumes_single_master",
+            "idx_resumes_is_master",
             "is_master",
-            unique=True,
-            sqlite_where=text("is_master = 1"),
+            unique=False,
         ),
     )
 

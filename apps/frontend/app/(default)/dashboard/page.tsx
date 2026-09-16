@@ -100,8 +100,6 @@ export default function DashboardPage() {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      loadRequestIdRef.current += 1;
-      statusRequestIdRef.current += 1;
     };
   }, []);
 
@@ -183,6 +181,14 @@ export default function DashboardPage() {
       setListError(false);
       const data = await fetchResumeList(true);
       if (!isCurrent()) return;
+
+      // Sort by latest updated/created timestamp descending
+      data.sort((a, b) => {
+        const timeA = new Date(a.updated_at || a.created_at).getTime();
+        const timeB = new Date(b.updated_at || b.created_at).getTime();
+        return timeB - timeA;
+      });
+
       const masterFromList = data.find((r) => r.is_master);
       const storedId = localStorage.getItem('master_resume_id');
       const resolvedMasterId = masterFromList?.resume_id || storedId;
@@ -191,18 +197,19 @@ export default function DashboardPage() {
         localStorage.setItem('master_resume_id', resolvedMasterId);
         adoptMasterResume(resolvedMasterId);
         checkResumeStatus(resolvedMasterId);
+        setHasMasterResume(true);
       } else {
         localStorage.removeItem('master_resume_id');
         adoptMasterResume(null);
+        setHasMasterResume(false);
       }
 
-      const filtered = data.filter((r) => r.resume_id !== resolvedMasterId);
-      setTailoredResumes(filtered);
+      setTailoredResumes(data);
 
       // Only fetch job descriptions for resumes that are actually tailored
       // (identified by having a non-null parent_id). This avoids N+1 calls
       // for untailored resumes.
-      const tailoredWithParent = filtered.filter((r) => r.parent_id);
+      const tailoredWithParent = data.filter((r) => r.parent_id);
 
       // Fetch job description snippets for tailored resumes in parallel and attach to state
       // Use a small in-memory cache to avoid re-fetching the same snippet repeatedly.
@@ -238,7 +245,7 @@ export default function DashboardPage() {
       console.error('Failed to load tailored resumes:', err);
       setListError(true);
     }
-  }, [adoptMasterResume, checkResumeStatus]);
+  }, []);
 
   useEffect(() => {
     loadTailoredResumes();
@@ -254,6 +261,7 @@ export default function DashboardPage() {
   }, [loadTailoredResumes, checkResumeStatus]);
 
   const handleUploadComplete = (resumeId: string) => {
+    setIsUploadDialogOpen(false);
     loadRequestIdRef.current += 1;
     void loadTailoredResumes();
     localStorage.setItem('master_resume_id', resumeId);
@@ -336,6 +344,7 @@ export default function DashboardPage() {
     const resumeId = masterResumeId;
     loadRequestIdRef.current += 1;
     try {
+      setShowDeleteDialog(false);
       setDeleteError(false);
       await deleteResume(resumeId);
       if (!mountedRef.current || activeMasterIdRef.current !== resumeId) return;
@@ -436,7 +445,7 @@ export default function DashboardPage() {
       </div>
     </div>
   ) : null;
-  if (listError && !masterResumeId && tailoredResumes.length === 0) return listErrorAlert;
+  if (listError && tailoredResumes.length === 0) return listErrorAlert;
 
   return (
     <div className="space-y-6">
@@ -465,29 +474,28 @@ export default function DashboardPage() {
       )}
 
       <SwissGrid>
-        {/* 1. Master Resume Logic */}
-        {!masterResumeId ? (
-          // LLM Not Configured or Upload State
-          !isLlmConfigured && !statusLoading ? (
-            <Link href="/settings" className="block h-full">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 w-full auto-rows-[200px]">
+          {/* 1. Permanent Upload / Initialize Master Resume Card at Index 0 */}
+          {!isLlmConfigured && !statusLoading ? (
+            <Link href="/settings" className="block w-full h-[200px]">
               <Card
                 variant="interactive"
-                className="aspect-square h-full border-dashed border-warning bg-amber-50"
+                className="w-full h-[200px] aspect-square border-dashed border-amber-500/30 bg-[#161618] hover:border-amber-500/60 p-4 flex flex-col justify-between"
               >
                 <div className="flex-1 flex flex-col justify-between">
-                  <div className="w-14 h-14 border-2 border-warning bg-white flex items-center justify-center mb-4">
-                    <AlertTriangle className="w-7 h-7 text-warning" />
+                  <div className="w-9 h-9 rounded-lg border border-amber-500/20 bg-amber-500/10 flex items-center justify-center mb-2">
+                    <AlertTriangle className="w-5 h-5 text-amber-400" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg uppercase text-amber-800 mb-2">
+                    <CardTitle className="text-sm uppercase text-amber-400 mb-1">
                       {t('dashboard.setupRequiredTitle')}
                     </CardTitle>
-                    <CardDescription className="text-amber-700 text-xs">
+                    <CardDescription className="text-amber-200/70 text-[11px] line-clamp-2">
                       {t('dashboard.setupRequiredMessage')}
                     </CardDescription>
-                    <div className="flex items-center gap-2 mt-4 text-amber-700 group-hover:text-amber-900">
-                      <Settings className="w-4 h-4" />
-                      <span className="font-mono text-xs font-bold uppercase">
+                    <div className="flex items-center gap-1.5 mt-2 text-amber-400 group-hover:text-amber-300">
+                      <Settings className="w-3.5 h-3.5" />
+                      <span className="font-mono text-[10px] font-bold uppercase">
                         {t('nav.goToSettings')}
                       </span>
                     </div>
@@ -496,194 +504,158 @@ export default function DashboardPage() {
               </Card>
             </Link>
           ) : (
-            <>
+            <Card
+              variant="interactive"
+              className="w-full h-[200px] aspect-square bg-[#161618] border border-white/10 hover:border-[#FF521D]/60 hover:bg-[#1C1C1E] p-4 flex flex-col justify-between"
+              role="button"
+              tabIndex={0}
+              aria-label={t('dashboard.initializeMasterResume')}
+              onClick={() => setIsMasterChoiceDialogOpen(true)}
+              onKeyDown={handleInitializeMasterKeyDown}
+            >
+              <div className="flex-1 flex flex-col justify-between pointer-events-none">
+                <div className="w-9 h-9 rounded-lg bg-[#FF521D]/10 border border-[#FF521D]/30 text-[#FF521D] flex items-center justify-center mb-2">
+                  <span className="text-xl font-mono leading-none">+</span>
+                </div>
+                <div>
+                  <CardTitle className="text-sm normal-case font-bold text-white leading-tight">
+                    {t('dashboard.initializeMasterResume')}
+                  </CardTitle>
+                  <CardDescription className="mt-1 text-[#A1A1AA] text-[10px] font-mono">
+                    {'// '}
+                    {t('dashboard.initializeSequence')}
+                  </CardDescription>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* 2. All Resumes (Master and Tailored) */}
+          {tailoredResumes.map((resume) => {
+            const title =
+              resume.title ||
+              resume.jobSnippet ||
+              resume.filename ||
+              (resume.is_master ? t('dashboard.masterResume') : t('dashboard.tailoredResume'));
+            const isMaster = resume.is_master;
+            const isCurrentMaster = resume.resume_id === masterResumeId;
+
+            return (
               <Card
+                key={resume.resume_id}
                 variant="interactive"
-                className="aspect-square h-full hover:bg-primary hover:text-canvas"
-                role="button"
-                tabIndex={0}
-                aria-label={t('dashboard.initializeMasterResume')}
-                onClick={() => setIsMasterChoiceDialogOpen(true)}
-                onKeyDown={handleInitializeMasterKeyDown}
+                className={`w-full h-[200px] aspect-square bg-[#161618] border ${
+                  isMaster
+                    ? 'border-[#4ED996]/30 hover:border-[#4ED996]/70'
+                    : 'border-white/10 hover:border-[#FF521D]/50'
+                } p-4 flex flex-col justify-between cursor-pointer group`}
+                onClick={() => router.push(`/resumes/${resume.resume_id}`)}
               >
-                <div className="flex-1 flex flex-col justify-between pointer-events-none">
-                  <div className="w-14 h-14 border-2 border-current flex items-center justify-center mb-4">
-                    <span className="text-2xl leading-none relative top-[-2px]">+</span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl uppercase">
-                      {t('dashboard.initializeMasterResume')}
-                    </CardTitle>
-                    <CardDescription className="mt-2 opacity-60 group-hover:opacity-100 text-current">
-                      {'// '}
-                      {t('dashboard.initializeSequence')}
-                    </CardDescription>
-                  </div>
-                </div>
-              </Card>
-              <MasterResumeChoiceDialog
-                open={isMasterChoiceDialogOpen}
-                onOpenChange={setIsMasterChoiceDialogOpen}
-                onChooseUpload={handleChooseUpload}
-                onChooseWizard={handleChooseWizard}
-              />
-              <ResumeUploadDialog
-                open={isUploadDialogOpen}
-                onOpenChange={setIsUploadDialogOpen}
-                onUploadComplete={handleUploadComplete}
-                trigger={
-                  <button type="button" className="hidden" tabIndex={-1} aria-hidden="true" />
-                }
-              />
-            </>
-          )
-        ) : (
-          // Master Resume Exists
-          <Card
-            variant="interactive"
-            className="aspect-square h-full"
-            onClick={() => router.push(`/resumes/${masterResumeId}`)}
-          >
-            <div className="flex-1 flex flex-col h-full">
-              <div className="flex justify-between items-start mb-6">
-                <div className="w-16 h-16 border-2 border-black bg-blue-700 text-white flex items-center justify-center">
-                  <span className="font-mono font-bold text-lg">M</span>
-                </div>
-                <div className="flex gap-1">
-                  {(processingStatus === 'failed' || processingStatus === 'processing') && (
-                    <>
+                <div className="flex-1 flex flex-col h-full justify-between">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-mono text-[9px] text-[#4ED996] px-1.5 py-0.5 rounded bg-[#4ED996]/10 border border-[#4ED996]/20 font-semibold uppercase">
+                      {t('dashboard.statusLine', {
+                        status: isCurrentMaster ? getStatusDisplay().text : resume.processing_status,
+                      })}
+                    </span>
+                    {(isCurrentMaster &&
+                      (processingStatus === 'failed' || processingStatus === 'processing')) ||
+                    resume.processing_status === 'failed' ? (
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 hover:bg-blue-100 hover:text-blue-700 z-10 rounded-none relative"
+                        className="h-6 w-6 text-[#FF521D] hover:bg-[#FF521D]/10"
                         onClick={handleRetryProcessing}
                         disabled={isRetrying}
                         aria-label={t('dashboard.retryProcessing')}
                         title={t('dashboard.retryProcessing')}
                       >
                         {isRetrying ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader2 className="w-3 h-3 animate-spin" />
                         ) : (
-                          <RefreshCw className="w-4 h-4" />
+                          <RefreshCw className="w-3 h-3" />
                         )}
                       </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <CardTitle className="text-lg group-hover:text-primary">
-                {t('dashboard.masterResume')}
-              </CardTitle>
-
-              <div
-                className={`text-xs font-mono mt-auto pt-4 flex flex-col gap-2 uppercase ${getStatusDisplay().color}`}
-              >
-                <div className="flex items-center gap-1">
-                  {getStatusDisplay().icon}
-                  {t('dashboard.statusLine', { status: getStatusDisplay().text })}
-                </div>
-                {(processingStatus === 'failed' || processingStatus === 'processing') && (
-                  <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs h-7 rounded-none border-black"
-                      onClick={handleRetryProcessing}
-                      disabled={isRetrying}
-                    >
-                      {isRetrying
-                        ? t('dashboard.retryingProcessing')
-                        : t('dashboard.retryProcessing')}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs h-7 rounded-none border-red-600 text-red-600 hover:bg-red-50"
-                      onClick={handleDeleteAndReupload}
-                    >
-                      {t('dashboard.deleteAndReupload')}
-                    </Button>
+                    ) : null}
                   </div>
-                )}
-              </div>
+
+                  <CardTitle className="text-xs text-white group-hover:text-[#FF521D] transition-colors leading-tight">
+                    <span className="block font-sans font-bold leading-tight w-full line-clamp-2">
+                      {title}
+                    </span>
+                  </CardTitle>
+
+                  <div className="mt-auto pt-2 flex flex-col gap-1">
+                    {isCurrentMaster &&
+                    (processingStatus === 'failed' || processingStatus === 'processing') ? (
+                      <div
+                        className="flex gap-1 pt-1 z-10"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-[10px] h-6 px-1.5 rounded border-white/20"
+                          onClick={handleRetryProcessing}
+                          disabled={isRetrying}
+                        >
+                          {isRetrying
+                            ? t('dashboard.retryingProcessing')
+                            : t('dashboard.retryProcessing')}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-[10px] h-6 px-1.5 rounded border-red-500/40 text-red-400 hover:bg-red-500/10"
+                          onClick={handleDeleteAndReupload}
+                        >
+                          {t('dashboard.deleteAndReupload')}
+                        </Button>
+                      </div>
+                    ) : (
+                      <CardDescription className="text-[10px] text-[#A1A1AA] font-mono">
+                        {t('dashboard.edited', {
+                          date: formatDate(resume.updated_at || resume.created_at),
+                        })}
+                      </CardDescription>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+
+          {/* 3. Create Tailored Resume */}
+          <Card className="w-full h-[200px] aspect-square bg-[#161618] border border-white/10 p-4 flex flex-col items-center justify-center text-center" variant="default">
+            <div className="flex-1 flex flex-col items-center justify-center text-center h-full">
+              <Button
+                onClick={() => router.push('/tailor')}
+                disabled={!isTailorEnabled}
+                className="w-10 h-10 bg-[#FF521D] text-white rounded-xl shadow-[0_4px_14px_-3px_rgba(255,82,29,0.4)] hover:bg-[#E04515] hover:scale-105 transition-all p-0 flex items-center justify-center"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+              <p className="text-xs font-mono mt-3 uppercase tracking-wider text-[#4ED996] font-semibold">
+                {t('dashboard.createResume')}
+              </p>
             </div>
           </Card>
-        )}
+        </div>
 
-        {/* 2. Tailored Resumes */}
-        {tailoredResumes.map((resume) => {
-          const title =
-            resume.title || resume.jobSnippet || resume.filename || t('dashboard.tailoredResume');
-          const color = cardPalette[hashTitle(title) % cardPalette.length];
-          return (
-            <Card
-              key={resume.resume_id}
-              variant="interactive"
-              className="aspect-square h-full bg-canvas"
-              onClick={() => router.push(`/resumes/${resume.resume_id}`)}
-            >
-              <div className="flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-6">
-                  <div
-                    className="w-12 h-12 border-2 border-black flex items-center justify-center"
-                    style={{ backgroundColor: color.bg, color: color.fg }}
-                  >
-                    <span className="font-mono font-bold">{getMonogram(title)}</span>
-                  </div>
-                  <span className="font-mono text-xs text-steel-grey uppercase">
-                    {resume.processing_status}
-                  </span>
-                </div>
-                <CardTitle className="text-lg">
-                  <span className="block font-serif text-base font-bold leading-tight mb-1 w-full line-clamp-2">
-                    {title}
-                  </span>
-                </CardTitle>
-                <CardDescription className="mt-auto pt-4 uppercase">
-                  {t('dashboard.edited', {
-                    date: formatDate(resume.updated_at || resume.created_at),
-                  })}{' '}
-                </CardDescription>
-              </div>
-            </Card>
-          );
-        })}
-
-        {/* 3. Create Tailored Resume */}
-        <Card className="aspect-square h-full" variant="default">
-          <div className="flex-1 flex flex-col items-center justify-center text-center h-full">
-            <Button
-              onClick={() => router.push('/tailor')}
-              disabled={!isTailorEnabled}
-              className="w-20 h-20 bg-blue-700 text-white border-2 border-black shadow-sw-default hover:bg-blue-800 hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-none transition-all rounded-none"
-            >
-              <Plus className="w-8 h-8" />
-            </Button>
-            <p className="text-xs font-mono mt-4 uppercase text-green-700">
-              {t('dashboard.createResume')}
-            </p>
-          </div>
-        </Card>
-
-        {/* 4. Fillers */}
-        {Array.from({ length: fillerCount }).map((_, index) => (
-          <Card
-            key={`filler-${index}`}
-            variant="ghost"
-            noPadding
-            className="hidden md:block bg-canvas aspect-square h-full opacity-50 pointer-events-none"
-          />
-        ))}
-
-        {Array.from({ length: extraFillerCount }).map((_, index) => (
-          <Card
-            key={`extra-filler-${index}`}
-            variant="ghost"
-            noPadding
-            className={`hidden md:block ${fillerPalette[index % fillerPalette.length]} aspect-square h-full opacity-70 pointer-events-none`}
-          />
-        ))}
+        <MasterResumeChoiceDialog
+          open={isMasterChoiceDialogOpen}
+          onOpenChange={setIsMasterChoiceDialogOpen}
+          onChooseUpload={handleChooseUpload}
+          onChooseWizard={handleChooseWizard}
+        />
+        <ResumeUploadDialog
+          open={isUploadDialogOpen}
+          onOpenChange={setIsUploadDialogOpen}
+          onUploadComplete={handleUploadComplete}
+          trigger={
+            <button type="button" className="hidden" tabIndex={-1} aria-hidden="true" />
+          }
+        />
 
         <ConfirmDialog
           open={showDeleteDialog}

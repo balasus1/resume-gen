@@ -12,6 +12,7 @@ import {
   uploadJobDescriptions,
   previewImproveResume,
   confirmImproveResume,
+  fetchResumeList,
 } from '@/lib/api/resume';
 import { fetchPromptConfig, type PromptOption } from '@/lib/api/config';
 import { getPreviewErrorMessage } from '@/lib/utils/preview-error';
@@ -81,18 +82,49 @@ export default function TailorPage() {
     incrementImprovements,
     incrementResumes,
   } = useStatusCache();
+  const [masterResumes, setMasterResumes] = useState<import('@/lib/api/resume').ResumeListItem[]>([]);
+  const [masterResumeLoading, setMasterResumeLoading] = useState(true);
 
   // Check if LLM is configured
   const isLlmConfigured = !statusLoading && systemStatus?.llm_configured;
 
   useEffect(() => {
+    let active = true;
     const storedId = localStorage.getItem('master_resume_id');
-    if (!storedId) {
-      router.push('/dashboard');
-    } else {
+    if (storedId) {
       setMasterResumeId(storedId);
     }
-  }, [router]);
+    try {
+      if (typeof fetchResumeList === 'function') {
+        fetchResumeList(true)
+          .then((resumes) => {
+            if (!active) return;
+            const masters = (resumes || []).filter((r) => r?.is_master);
+            setMasterResumes(masters);
+            const match = masters.find((m) => m.resume_id === storedId);
+            if (match) {
+              setMasterResumeId(match.resume_id);
+            } else if (masters.length > 0) {
+              setMasterResumeId(masters[0].resume_id);
+              localStorage.setItem('master_resume_id', masters[0].resume_id);
+            }
+          })
+          .catch((err) => {
+            console.error('Failed to fetch resumes on tailor page', err);
+          })
+          .finally(() => {
+            if (active) setMasterResumeLoading(false);
+          });
+      } else {
+        setMasterResumeLoading(false);
+      }
+    } catch {
+      if (active) setMasterResumeLoading(false);
+    }
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -378,19 +410,19 @@ export default function TailorPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F6F5EE] flex flex-col items-center justify-center p-4 md:p-8 font-sans">
-      <div className="w-full max-w-4xl bg-white border border-black shadow-sw-lg p-8 md:p-12 lg:p-14 relative">
+    <div className="min-h-screen w-full bg-[#18181A] text-[#F5F5F5] flex flex-col items-center justify-center p-4 md:p-8 font-sans">
+      <div className="w-full max-w-4xl bg-[#161618] border border-white/10 rounded-xl shadow-2xl p-8 md:p-12 lg:p-14 relative">
         {/* Back Button */}
-        <Button variant="link" className="absolute top-4 left-4" onClick={() => router.back()}>
+        <Button variant="link" className="absolute top-4 left-4 text-[#A1A1AA] hover:text-[#FF521D]" onClick={() => router.back()}>
           <ArrowLeft className="w-4 h-4" />
           {t('common.back')}
         </Button>
 
         <div className="mb-8 mt-4 text-center">
-          <h1 className="font-serif text-4xl font-bold uppercase tracking-tight mb-2">
+          <h1 className="font-mono text-3xl font-bold uppercase tracking-tight mb-2 text-[#F5F5F5]">
             {t('tailor.heroTitle')}
           </h1>
-          <p className="font-mono text-sm text-blue-700 font-bold uppercase">
+          <p className="font-mono text-xs text-[#FF521D] font-bold uppercase tracking-wider">
             {'// '}
             {t('tailor.pasteJobDescriptionBelow')}
           </p>
@@ -398,19 +430,19 @@ export default function TailorPage() {
 
         {/* LLM Not Configured Warning */}
         {!statusLoading && !isLlmConfigured && (
-          <div className="mb-6 border-2 border-amber-500 bg-amber-50 p-4 shadow-sw-default">
+          <div className="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-mono text-sm font-bold uppercase tracking-wider text-amber-800">
+                <p className="font-mono text-sm font-bold uppercase tracking-wider text-amber-400">
                   {t('tailor.setupRequiredTitle')}
                 </p>
-                <p className="font-mono text-xs text-amber-700 mt-1">
+                <p className="font-mono text-xs text-amber-200/70 mt-1">
                   {t('tailor.noApiKeyMessage')}
                 </p>
                 <Link
                   href="/settings"
-                  className="inline-flex items-center gap-2 mt-3 text-amber-700 hover:text-amber-900 transition-colors"
+                  className="inline-flex items-center gap-2 mt-3 text-amber-400 hover:text-amber-300 transition-colors"
                 >
                   <Settings className="w-4 h-4" />
                   <span className="font-mono text-xs font-bold uppercase underline">
@@ -422,7 +454,43 @@ export default function TailorPage() {
           </div>
         )}
 
+        {/* Master Resume Uninitialized Warning Banner */}
+        {!masterResumeLoading && !masterResumeId && (
+          <div className="mb-6 rounded-lg border border-[#FF521D]/30 bg-[#FF521D]/10 p-6 text-center">
+            <AlertTriangle className="w-8 h-8 text-[#FF521D] mx-auto mb-3" />
+            <h3 className="font-mono text-base font-bold uppercase text-white mb-2">
+              Master Resume Required
+            </h3>
+            <p className="font-mono text-xs text-[#A1A1AA] max-w-md mx-auto mb-5 leading-relaxed">
+              You haven't uploaded or initialized a master resume yet. Initialize your master resume on the dashboard before tailoring for target job descriptions.
+            </p>
+            <Link href="/dashboard">
+              <Button size="sm" className="bg-[#FF521D] text-white hover:bg-[#E04515]">
+                Go to Dashboard & Initialize Master Resume
+              </Button>
+            </Link>
+          </div>
+        )}
+
         <div className="space-y-6">
+          {masterResumes.length > 0 && (
+            <Dropdown
+              options={masterResumes.map((r, i) => ({
+                id: r.resume_id,
+                label: r.title || r.filename || `Master Resume #${i + 1}`,
+                description: `ID: ${r.resume_id.slice(0, 8)}... | Status: ${r.processing_status}`,
+              }))}
+              value={masterResumeId || ''}
+              onChange={(value) => {
+                setMasterResumeId(value);
+                localStorage.setItem('master_resume_id', value);
+              }}
+              label="Source Master Resume"
+              description="Select which master resume profile to use as reference for tailoring"
+              disabled={isLoading}
+            />
+          )}
+
           <Dropdown
             options={
               promptOptions.length > 0
@@ -462,27 +530,27 @@ export default function TailorPage() {
           <div className="relative">
             <Textarea
               placeholder={t('tailor.jobDescriptionPlaceholder')}
-              className="min-h-[300px] font-mono text-sm bg-background border-2 border-black focus:ring-0 focus:border-blue-700 resize-none p-4 rounded-none"
+              className="min-h-[260px] font-mono text-sm bg-[#1E1E20] border border-white/10 text-[#F5F5F5] placeholder:text-[#A1A1AA]/50 focus:border-[#FF521D] focus:ring-1 focus:ring-[#FF521D] resize-none p-4 rounded-xl transition-colors"
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               onKeyDown={handleTextareaKeyDown}
               disabled={isLoading}
             />
-            <div className="absolute bottom-2 right-2 text-xs font-mono text-steel-grey pointer-events-none">
+            <div className="absolute bottom-3 right-3 text-xs font-mono text-[#A1A1AA] pointer-events-none">
               {t('tailor.charactersCount', { count: jobDescription.length })}
             </div>
           </div>
 
           {error && (
-            <div className="p-4 bg-red-100 border-2 border-red-600 text-red-600 text-sm font-mono flex items-center gap-2">
-              <span>!</span> {error}
+            <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono rounded-lg flex items-center gap-2">
+              <span className="font-bold">!</span> {error}
             </div>
           )}
 
           <Button
             size="lg"
             onClick={handleGenerate}
-            disabled={isLoading || statusLoading || !jobDescription.trim() || !isLlmConfigured}
+            disabled={isLoading || statusLoading || masterResumeLoading || !masterResumeId || !jobDescription.trim() || !isLlmConfigured}
             className="w-full"
           >
             {isLoading ? (
@@ -493,11 +561,13 @@ export default function TailorPage() {
                   <span className="font-mono text-xs opacity-70 ml-2">{elapsed}s</span>
                 )}
               </>
-            ) : statusLoading ? (
+            ) : statusLoading || masterResumeLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
                 {t('common.checking')}
               </>
+            ) : !masterResumeId ? (
+              "Initialize Master Resume First"
             ) : !isLlmConfigured ? (
               t('tailor.configureApiKeyFirst')
             ) : (

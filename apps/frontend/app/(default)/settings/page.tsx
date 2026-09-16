@@ -82,9 +82,9 @@ const PROVIDERS: LLMProvider[] = [
 ];
 
 const SEGMENTED_BUTTON_BASE =
-  'border border-black font-mono transition-all duration-150 ease-out shadow-sw-sm hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-none disabled:cursor-not-allowed disabled:opacity-50';
-const SEGMENTED_BUTTON_ACTIVE = 'bg-blue-700 text-white border-black hover:bg-blue-800';
-const SEGMENTED_BUTTON_INACTIVE = 'bg-white text-black hover:bg-secondary';
+  'border border-white/10 font-mono transition-all duration-150 ease-out rounded-lg disabled:cursor-not-allowed disabled:opacity-50';
+const SEGMENTED_BUTTON_ACTIVE = 'bg-[#FF521D] text-white border-[#FF521D] hover:bg-[#E04515]';
+const SEGMENTED_BUTTON_INACTIVE = 'bg-[#1E1E20] text-[#A1A1AA] border-white/10 hover:bg-white/10 hover:text-white';
 
 const unwrapCodeBlock = (value?: string | null): string | null => {
   if (!value) return null;
@@ -685,21 +685,21 @@ export default function SettingsPage() {
     : t('settings.llmConfiguration.baseUrlDescription');
 
   return (
-    <div className="flex flex-col items-center justify-start p-6 md:p-12 min-h-screen overflow-y-auto">
-      <div className="w-full max-w-4xl border border-black bg-background shadow-sw-lg">
+    <div className="flex flex-col items-center justify-start p-6 md:p-12 min-h-screen overflow-y-auto bg-[#18181A]">
+      <div className="w-full max-w-4xl border border-white/10 bg-[#161618] rounded-xl overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="border-b border-black p-8 bg-white flex justify-between items-start">
+        <div className="border-b border-white/10 p-8 bg-[#161618] flex justify-between items-start">
           <div>
-            <h1 className="font-serif text-3xl font-bold tracking-tight uppercase">
+            <h1 className="font-mono text-3xl font-bold tracking-tight uppercase text-[#F5F5F5]">
               {t('settings.title')}
             </h1>
-            <p className="font-mono text-xs text-steel-grey mt-2 uppercase tracking-wider">
+            <p className="font-mono text-xs text-[#FF521D] mt-2 uppercase tracking-wider font-bold">
               {'// '}
               {t('settings.subtitle')}
             </p>
           </div>
           <Link href="/dashboard">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-white/10 text-[#F5F5F5] hover:bg-white/10">
               <ArrowLeft className="w-4 h-4" />
               {t('common.back')}
             </Button>
@@ -709,14 +709,14 @@ export default function SettingsPage() {
         <div className="p-8 space-y-10">
           {/* API Key Not Configured Warning */}
           {!statusLoading && systemStatus && !systemStatus.llm_configured && (
-            <div className="border-2 border-amber-500 bg-amber-50 p-4 shadow-sw-default">
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
               <div className="flex items-start gap-3">
-                <div className="w-3 h-3 bg-amber-500 mt-1 shrink-0"></div>
+                <div className="w-3 h-3 rounded-full bg-amber-400 mt-1 shrink-0"></div>
                 <div className="flex-1">
-                  <p className="font-mono text-sm font-bold uppercase tracking-wider text-amber-800">
+                  <p className="font-mono text-sm font-bold uppercase tracking-wider text-amber-400">
                     {t('settings.setupRequired.title')}
                   </p>
-                  <p className="font-mono text-xs text-amber-700 mt-1">
+                  <p className="font-mono text-xs text-amber-200/70 mt-1">
                     {t('settings.setupRequired.description')}
                   </p>
                 </div>
@@ -782,20 +782,20 @@ export default function SettingsPage() {
               <div className="@container">
                 <div className="grid grid-cols-2 @3xl:grid-cols-4 gap-4">
                   {/* LLM Status */}
-                  <div className="border border-black bg-white p-4 shadow-sw-sm">
+                  <div className="border border-white/10 bg-[#1E1E20] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Server className="w-4 h-4 text-steel-grey" />
-                      <span className="font-mono text-xs uppercase text-steel-grey">
+                      <Server className="w-4 h-4 text-[#A1A1AA]" />
+                      <span className="font-mono text-xs uppercase text-[#A1A1AA]">
                         {t('settings.statusCards.llm')}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       {systemStatus.llm_healthy ? (
-                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                        <CheckCircle2 className="w-5 h-5 text-[#4ED996]" />
                       ) : (
-                        <XCircle className="w-5 h-5 text-red-500" />
+                        <XCircle className="w-5 h-5 text-red-400" />
                       )}
-                      <span className="font-mono text-sm font-bold">
+                      <span className="font-mono text-sm font-bold text-[#F5F5F5]">
                         {systemStatus.llm_healthy
                           ? t('settings.statusValues.healthy')
                           : t('settings.statusValues.offline')}
@@ -804,43 +804,43 @@ export default function SettingsPage() {
                   </div>
 
                   {/* Database Status */}
-                  <div className="border border-black bg-white p-4 shadow-sw-sm">
+                  <div className="border border-white/10 bg-[#1E1E20] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Database className="w-4 h-4 text-steel-grey" />
-                      <span className="font-mono text-xs uppercase text-steel-grey">
+                      <Database className="w-4 h-4 text-[#A1A1AA]" />
+                      <span className="font-mono text-xs uppercase text-[#A1A1AA]">
                         {t('settings.statusCards.database')}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      <span className="font-mono text-sm font-bold">
+                      <CheckCircle2 className="w-5 h-5 text-[#4ED996]" />
+                      <span className="font-mono text-sm font-bold text-[#F5F5F5]">
                         {t('settings.statusValues.connected')}
                       </span>
                     </div>
                   </div>
 
                   {/* Resumes Count */}
-                  <div className="border border-black bg-white p-4 shadow-sw-sm">
+                  <div className="border border-white/10 bg-[#1E1E20] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <FileText className="w-4 h-4 text-steel-grey" />
-                      <span className="font-mono text-xs uppercase text-steel-grey">
+                      <FileText className="w-4 h-4 text-[#A1A1AA]" />
+                      <span className="font-mono text-xs uppercase text-[#A1A1AA]">
                         {t('settings.statusCards.resumes')}
                       </span>
                     </div>
-                    <span className="font-mono text-2xl font-bold">
+                    <span className="font-mono text-2xl font-bold text-[#F5F5F5]">
                       {systemStatus.database_stats.total_resumes}
                     </span>
                   </div>
 
                   {/* Jobs Count */}
-                  <div className="border border-black bg-white p-4 shadow-sw-sm">
+                  <div className="border border-white/10 bg-[#1E1E20] rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Briefcase className="w-4 h-4 text-steel-grey" />
-                      <span className="font-mono text-xs uppercase text-steel-grey">
+                      <Briefcase className="w-4 h-4 text-[#A1A1AA]" />
+                      <span className="font-mono text-xs uppercase text-[#A1A1AA]">
                         {t('settings.statusCards.jobs')}
                       </span>
                     </div>
-                    <span className="font-mono text-2xl font-bold">
+                    <span className="font-mono text-2xl font-bold text-[#F5F5F5]">
                       {systemStatus.database_stats.total_jobs}
                     </span>
                   </div>
@@ -851,21 +851,21 @@ export default function SettingsPage() {
             {/* Additional Stats Row */}
             {systemStatus && (
               <div className="grid grid-cols-2 gap-4">
-                <div className="border border-black bg-white p-4 shadow-sw-sm">
+                <div className="border border-white/10 bg-[#1E1E20] rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-steel-grey" />
-                    <span className="font-mono text-xs uppercase text-steel-grey">
+                    <Sparkles className="w-4 h-4 text-[#A1A1AA]" />
+                    <span className="font-mono text-xs uppercase text-[#A1A1AA]">
                       {t('settings.statusCards.improvements')}
                     </span>
                   </div>
-                  <span className="font-mono text-2xl font-bold">
+                  <span className="font-mono text-2xl font-bold text-[#F5F5F5]">
                     {systemStatus.database_stats.total_improvements}
                   </span>
                 </div>
-                <div className="border border-black bg-white p-4 shadow-sw-sm">
+                <div className="border border-white/10 bg-[#1E1E20] rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <FileText className="w-4 h-4 text-steel-grey" />
-                    <span className="font-mono text-xs uppercase text-steel-grey">
+                    <FileText className="w-4 h-4 text-[#A1A1AA]" />
+                    <span className="font-mono text-xs uppercase text-[#A1A1AA]">
                       {t('settings.statusCards.masterResume')}
                     </span>
                   </div>
@@ -1141,19 +1141,19 @@ export default function SettingsPage() {
                       {healthDetailItems.map((item) =>
                         item.key === 'reasoningContent' ? (
                           <details key={item.key} className="group">
-                            <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-ink-soft hover:text-black">
+                            <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-[#A1A1AA] hover:text-[#F5F5F5]">
                               {item.label}
                             </summary>
-                            <pre className="mt-1 whitespace-pre-wrap break-words rounded-none border border-black bg-white p-3 text-xs text-ink-soft shadow-sw-sm">
+                            <pre className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-white/10 bg-[#1E1E20] p-3 font-mono text-xs text-[#F5F5F5]">
                               {item.value}
                             </pre>
                           </details>
                         ) : (
                           <div key={item.key}>
-                            <p className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
+                            <p className="font-mono text-[10px] uppercase tracking-wider text-[#A1A1AA]">
                               {item.label}
                             </p>
-                            <pre className="mt-1 whitespace-pre-wrap break-words rounded-none border border-black bg-white p-3 text-xs text-ink-soft shadow-sw-sm">
+                            <pre className="mt-1 whitespace-pre-wrap break-words rounded-lg border border-white/10 bg-[#1E1E20] p-3 font-mono text-xs text-[#F5F5F5]">
                               {item.value}
                             </pre>
                           </div>
@@ -1168,15 +1168,15 @@ export default function SettingsPage() {
 
           {/* Content Generation Section */}
           <section className="space-y-6">
-            <div className="flex items-center gap-2 border-b border-black/10 pb-2">
-              <Settings2 className="w-4 h-4" />
-              <h2 className="font-mono text-sm font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+              <Settings2 className="w-4 h-4 text-[#A1A1AA]" />
+              <h2 className="font-mono text-sm font-bold uppercase tracking-wider text-[#F5F5F5]">
                 {t('settings.contentGeneration.title')}
               </h2>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm text-ink-soft mb-4">
+              <p className="text-sm text-[#A1A1AA] mb-4">
                 {t('settings.contentGeneration.description')}
               </p>
 
@@ -1193,7 +1193,7 @@ export default function SettingsPage() {
                 />
                 {enableCoverLetter && (
                   <div className="pl-6 space-y-2">
-                    <Label htmlFor="coverLetterPrompt">
+                    <Label htmlFor="coverLetterPrompt" className="text-[#F5F5F5]">
                       {t('settings.contentGeneration.customPromptLabel')}
                     </Label>
                     <textarea
@@ -1202,13 +1202,13 @@ export default function SettingsPage() {
                       value={coverLetterPrompt}
                       onChange={(e) => setCoverLetterPrompt(e.target.value)}
                       placeholder={coverLetterDefault}
-                      className="w-full rounded-none border border-black bg-white p-3 font-mono text-xs break-words focus:outline-none focus:shadow-[4px_4px_0_0_#000]"
+                      className="w-full rounded-lg border border-white/10 bg-[#1E1E20] p-3.5 font-mono text-xs text-[#F5F5F5] placeholder:text-[#A1A1AA]/50 focus:outline-none focus:border-[#FF521D] focus:ring-1 focus:ring-[#FF521D] transition-colors break-words"
                     />
-                    <p className="text-xs text-steel-grey font-mono">
+                    <p className="text-xs text-[#A1A1AA] font-mono">
                       {t('settings.contentGeneration.customPromptHelp')}
                     </p>
                     {featurePromptError?.field === 'cover_letter_prompt' && (
-                      <p className="text-xs text-red-600 font-mono break-words">
+                      <p className="text-xs text-red-400 font-mono break-words">
                         {t('settings.contentGeneration.customPromptErrorMissing', {
                           missing: featurePromptError.missing.join(', '),
                         })}
@@ -1250,7 +1250,7 @@ export default function SettingsPage() {
                 />
                 {enableOutreach && (
                   <div className="pl-6 space-y-2">
-                    <Label htmlFor="outreachPrompt">
+                    <Label htmlFor="outreachPrompt" className="text-[#F5F5F5]">
                       {t('settings.contentGeneration.customPromptLabel')}
                     </Label>
                     <textarea
@@ -1259,13 +1259,13 @@ export default function SettingsPage() {
                       value={outreachPrompt}
                       onChange={(e) => setOutreachPrompt(e.target.value)}
                       placeholder={outreachDefault}
-                      className="w-full rounded-none border border-black bg-white p-3 font-mono text-xs break-words focus:outline-none focus:shadow-[4px_4px_0_0_#000]"
+                      className="w-full rounded-lg border border-white/10 bg-[#1E1E20] p-3.5 font-mono text-xs text-[#F5F5F5] placeholder:text-[#A1A1AA]/50 focus:outline-none focus:border-[#FF521D] focus:ring-1 focus:ring-[#FF521D] transition-colors break-words"
                     />
-                    <p className="text-xs text-steel-grey font-mono">
+                    <p className="text-xs text-[#A1A1AA] font-mono">
                       {t('settings.contentGeneration.customPromptHelp')}
                     </p>
                     {featurePromptError?.field === 'outreach_message_prompt' && (
-                      <p className="text-xs text-red-600 font-mono break-words">
+                      <p className="text-xs text-red-400 font-mono break-words">
                         {t('settings.contentGeneration.customPromptErrorMissing', {
                           missing: featurePromptError.missing.join(', '),
                         })}

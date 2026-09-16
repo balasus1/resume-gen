@@ -73,6 +73,11 @@ def init_models_sync(engine: Engine) -> None:
         if columns and "processing_token" not in existing_columns:
             conn.exec_driver_sql("ALTER TABLE resumes ADD COLUMN processing_token TEXT")
 
+        # Drop legacy single-master unique index if present on disk
+        conn.exec_driver_sql("DROP INDEX IF EXISTS ux_resumes_single_master")
+        if "is_master" in existing_columns:
+            conn.exec_driver_sql("CREATE INDEX IF NOT EXISTS idx_resumes_is_master ON resumes (is_master)")
+
         preview_columns = conn.exec_driver_sql("PRAGMA table_info(tailoring_previews)").mappings().all()
         if preview_columns and "improvements" not in {column["name"] for column in preview_columns}:
             conn.exec_driver_sql("ALTER TABLE tailoring_previews ADD COLUMN improvements JSON")

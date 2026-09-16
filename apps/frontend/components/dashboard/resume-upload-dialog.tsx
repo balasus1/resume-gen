@@ -126,7 +126,7 @@ export function ResumeUploadDialog({
   ] = useFileUpload({
     maxSize: MAX_FILE_SIZE,
     accept: ACCEPTED_FILE_TYPES.join(','),
-    multiple: false,
+    multiple: true,
     uploadUrl: UPLOAD_URL,
     onUploadSuccess: (uploadedFile, response) => {
       const data = response as {
@@ -294,23 +294,23 @@ export function ResumeUploadDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md bg-background border border-black shadow-sw-lg p-0 gap-0 rounded-none">
-        <DialogHeader className="p-6 border-b border-black bg-white">
-          <DialogTitle className="font-serif text-2xl font-bold uppercase tracking-tight">
+      <DialogContent className="sm:max-w-md bg-[#161618] border border-white/12 shadow-[0_24px_60px_-15px_rgba(0,0,0,0.85)] p-0 gap-0 rounded-xl text-[#F5F5F5]">
+        <DialogHeader className="p-6 border-b border-white/10 bg-[#161618]">
+          <DialogTitle className="font-sans text-2xl font-bold tracking-tight text-white">
             {t('dashboard.uploadResume')}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="p-6 bg-background">
+        <div className="p-6 bg-[#18181A]">
           <div
             className={`
-                            relative border-2 border-dashed p-8 text-center transition-all duration-200
-                            ${isDragging ? 'border-blue-700 bg-blue-50' : 'border-steel-grey hover:border-black hover:bg-white'}
-                            ${currentFile ? 'bg-white border-solid border-black' : ''}
-                            ${!currentFile && !isRecovering ? 'cursor-pointer' : 'cursor-default'}
+                            relative border-2 border-dashed p-6 text-center transition-all duration-200 rounded-xl
+                            ${isDragging ? 'border-[#FF521D] bg-[#FF521D]/10' : 'border-white/20 hover:border-white/40 bg-[#1E1E20]'}
+                            ${files.length > 0 ? 'bg-[#1E1E20] border-solid border-white/20' : ''}
+                            ${!isRecovering ? 'cursor-pointer' : 'cursor-default'}
                             ${isRecovering ? 'opacity-70' : ''}
                         `}
-            onClick={!currentFile && !isRecovering ? openFileDialog : undefined}
+            onClick={!isRecovering ? openFileDialog : undefined}
             onDragEnter={isRecovering ? preventDropzoneInteraction : handleDragEnter}
             onDragLeave={isRecovering ? preventDropzoneInteraction : handleDragLeave}
             onDragOver={isRecovering ? preventDropzoneInteraction : handleDragOver}
@@ -318,52 +318,70 @@ export function ResumeUploadDialog({
           >
             <input {...getInputProps()} />
 
-            {isUploadingGlobal ? (
-              <div className="flex flex-col items-center py-4">
-                <Loader2Icon className="w-10 h-10 animate-spin text-blue-700 mb-4" />
-                <p className="font-mono text-sm font-bold uppercase text-blue-700">
-                  {t('common.uploading')}
-                </p>
-              </div>
-            ) : currentFile ? (
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 text-left overflow-hidden">
-                  <div className="w-10 h-10 border border-black bg-paper-tint flex items-center justify-center shrink-0">
-                    <FileIcon className="w-5 h-5 text-black" />
+            {files.length > 0 ? (
+              <div className="space-y-3">
+                {files.map((fileItem) => {
+                  const meta = fileItem.file as { name: string; size: number; uploaded?: boolean; uploadError?: string };
+                  return (
+                    <div
+                      key={fileItem.id}
+                      className="flex items-center justify-between gap-4 p-3 border border-white/10 bg-[#161618] rounded-lg"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex items-center gap-3 text-left overflow-hidden">
+                        <div className="w-9 h-9 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center shrink-0 text-[#FF521D]">
+                          <FileIcon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm text-white truncate max-w-[200px]">
+                            {meta.name}
+                          </p>
+                          <p className="font-mono text-xs text-[#A1A1AA]">
+                            {formatBytes(meta.size)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {isUploadingGlobal && !meta.uploaded && !meta.uploadError && (
+                          <Loader2Icon className="w-4 h-4 animate-spin text-[#FF521D]" />
+                        )}
+                        {meta.uploaded && (
+                          <CheckCircle2Icon className="w-4 h-4 text-[#4ED996]" />
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={isRecovering}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(fileItem.id);
+                          }}
+                          className="hover:bg-red-500/20 text-red-400 rounded-md h-8 w-8"
+                          aria-label={t('a11y.removeFile')}
+                          title={t('a11y.removeFile')}
+                        >
+                          <XIcon className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+                {isUploadingGlobal && (
+                  <div className="flex items-center justify-center gap-2 pt-2 text-[#FF521D]">
+                    <Loader2Icon className="w-4 h-4 animate-spin" />
+                    <p className="font-mono text-xs font-bold uppercase">{t('common.uploading')}</p>
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-bold text-sm truncate max-w-[200px]">
-                      {currentFile.file.name}
-                    </p>
-                    <p className="font-mono text-xs text-steel-grey">
-                      {formatBytes(currentFile.file.size)}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  disabled={isRecovering}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeFile(currentFile.id);
-                  }}
-                  className="hover:bg-red-100 text-red-600 rounded-none"
-                  aria-label={t('a11y.removeFile')}
-                  title={t('a11y.removeFile')}
-                >
-                  <XIcon className="w-5 h-5" />
-                </Button>
+                )}
               </div>
             ) : (
               <div className="flex flex-col items-center py-4">
-                <div className="w-12 h-12 border border-black bg-white shadow-sw-default flex items-center justify-center mb-4">
-                  <UploadIcon className="w-6 h-6 text-black" />
+                <div className="w-12 h-12 border border-white/12 bg-white/5 rounded-xl flex items-center justify-center mb-3 text-[#FF521D]">
+                  <UploadIcon className="w-6 h-6" />
                 </div>
-                <p className="font-bold text-lg mb-1">
+                <p className="font-bold text-base text-white mb-1">
                   {t('dashboard.uploadDialog.dropzoneTitle')}
                 </p>
-                <p className="font-mono text-xs text-steel-grey uppercase">
+                <p className="font-mono text-xs text-[#A1A1AA] uppercase tracking-wider">
                   {t('dashboard.uploadDialog.dropzoneSubtitle')}
                 </p>
               </div>
@@ -372,8 +390,8 @@ export function ResumeUploadDialog({
 
           {/* Feedback Messages */}
           {displayErrors.length > 0 && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 flex items-start gap-2 text-red-700 text-sm">
-              <AlertCircleIcon className="w-5 h-5 shrink-0" />
+            <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-2 text-red-300 text-sm font-sans">
+              <AlertCircleIcon className="w-5 h-5 shrink-0 text-red-400" />
               <div>
                 {displayErrors.map((err, i) => (
                   <p key={i}>{err}</p>
@@ -383,24 +401,24 @@ export function ResumeUploadDialog({
           )}
 
           {uploadFeedback?.type === 'pending' && (
-            <p role="status" className="mt-4 border border-black p-3 font-mono text-sm">
+            <p role="status" className="mt-4 border border-white/10 bg-[#1E1E20] p-3 rounded-lg font-mono text-xs text-[#A1A1AA]">
               {uploadFeedback.message}
             </p>
           )}
 
           {uploadFeedback?.type === 'success' && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 flex items-center gap-2 text-green-700 text-sm font-bold">
+            <div className="mt-4 p-3 bg-[#4ED996]/10 border border-[#4ED996]/30 rounded-lg flex items-center gap-2 text-[#4ED996] text-sm font-semibold">
               <CheckCircle2Icon className="w-5 h-5 shrink-0" />
               <p>{uploadFeedback.message}</p>
             </div>
           )}
         </div>
 
-        <div className="p-4 border-t border-black bg-white flex flex-wrap justify-end gap-2">
+        <div className="p-4 border-t border-white/10 bg-[#161618] flex flex-wrap justify-end gap-2">
           {failedResumeId && uploadFeedback?.type !== 'success' && (
             <Button
               variant="outline"
-              className="rounded-none border-black hover:bg-paper-tint"
+              className="rounded-lg border-white/14 text-white"
               onClick={handleRetryProcessing}
               disabled={isRecovering}
             >
@@ -421,7 +439,7 @@ export function ResumeUploadDialog({
           {uploadFeedback?.type === 'error' && files.length > 0 && (
             <Button
               variant="outline"
-              className="rounded-none border-black hover:bg-paper-tint"
+              className="rounded-lg border-white/14 text-white"
               disabled={isRecovering}
               onClick={() => {
                 if (files[0]) removeFile(files[0].id);
@@ -433,7 +451,7 @@ export function ResumeUploadDialog({
             </Button>
           )}
           <DialogClose asChild>
-            <Button variant="outline" className="rounded-none border-black hover:bg-paper-tint">
+            <Button variant="outline" className="rounded-lg border-white/14 text-[#A1A1AA]">
               {t('common.cancel')}
             </Button>
           </DialogClose>

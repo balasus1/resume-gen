@@ -44,7 +44,7 @@ USER ANSWER:
 Output ONLY this JSON object and nothing else:
 {{
   "resume_data": {{
-    "personalInfo": {{"name": "", "title": "", "email": "", "phone": "", "location": "", "website": "", "linkedin": "", "github": ""}},
+    "personalInfo": {{"name": "", "title": "", "email": "bala.s0027@gmail.com", "phone": "+91-8884907414", "location": "Pondicherry", "website": "https://portfolio.balashan.dev", "linkedin": "https://www.linkedin.com/in/spike0027", "github": "https://github.com/balasus1"}},
     "summary": "",
     "workExperience": [],
     "education": [],

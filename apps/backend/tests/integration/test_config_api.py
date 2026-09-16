@@ -353,6 +353,16 @@ class TestLanguageConfig:
         assert data["content_language"] == "es"
         assert "en" in data["supported_languages"]
 
+    @patch("app.routers.config._load_config")
+    async def test_get_language_with_null_or_invalid_stored_config(self, mock_load, client):
+        mock_load.return_value = {"ui_language": None, "content_language": "invalid", "language": None}
+        async with client:
+            resp = await client.get("/api/v1/config/language")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["ui_language"] == "en"
+        assert data["content_language"] == "en"
+
     @patch("app.routers.config._save_config")
     @patch("app.routers.config._load_config")
     async def test_put_invalid_language_returns_400(self, mock_load, mock_save, client):

@@ -119,13 +119,12 @@ class TestMasterResume:
         created = await db.create_resume_atomic_master(content="first", processing_status="ready")
         assert created["is_master"] is True
 
-    async def test_atomic_second_upload_not_master(self, db):
+    async def test_atomic_second_upload_is_master(self, db):
         await db.create_resume_atomic_master(content="first", processing_status="ready")
         second = await db.create_resume_atomic_master(content="second", processing_status="ready")
-        assert second["is_master"] is False
+        assert second["is_master"] is True
 
     async def test_atomic_recovers_when_master_stuck(self, db):
-        # Master stuck in "failed" → next upload is promoted to master.
         first = await db.create_resume_atomic_master(content="first", processing_status="failed")
         assert first["is_master"] is True
         second = await db.create_resume_atomic_master(content="second", processing_status="ready")

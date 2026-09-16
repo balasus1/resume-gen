@@ -265,7 +265,8 @@ export async function fetchLanguageConfig(): Promise<LanguageConfig> {
   const res = await apiFetch('/config/language', { credentials: 'include' });
 
   if (!res.ok) {
-    throw new Error(`Failed to load language config (status ${res.status}).`);
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.detail || `Failed to load language config (status ${res.status}).`);
   }
 
   return res.json();

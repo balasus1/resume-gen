@@ -3,6 +3,7 @@
 import json
 import logging
 from pathlib import Path
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 
@@ -294,17 +295,24 @@ async def update_feature_config(request: FeatureConfigRequest) -> FeatureConfigR
 SUPPORTED_LANGUAGES = ["en", "es", "zh", "ja", "pt", "fr", "ko"]
 
 
+def _resolve_language(val: Any, fallback: str = "en") -> str:
+    """Safely resolve a language code, defaulting if missing or unsupported."""
+    if isinstance(val, str) and val in SUPPORTED_LANGUAGES:
+        return val
+    return fallback
+
+
 @router.get("/language", response_model=LanguageConfigResponse)
 async def get_language_config() -> LanguageConfigResponse:
     """Get current language configuration."""
     stored = _load_config()
 
     # Support legacy single 'language' field migration
-    legacy_language = stored.get("language", "en")
+    legacy_language = _resolve_language(stored.get("language"), "en")
 
     return LanguageConfigResponse(
-        ui_language=stored.get("ui_language", legacy_language),
-        content_language=stored.get("content_language", legacy_language),
+        ui_language=_resolve_language(stored.get("ui_language"), legacy_language),
+        content_language=_resolve_language(stored.get("content_language"), legacy_language),
         supported_languages=SUPPORTED_LANGUAGES,
     )
 
@@ -338,11 +346,11 @@ async def update_language_config(
     _save_config(stored)
 
     # Support legacy single 'language' field migration
-    legacy_language = stored.get("language", "en")
+    legacy_language = _resolve_language(stored.get("language"), "en")
 
     return LanguageConfigResponse(
-        ui_language=stored.get("ui_language", legacy_language),
-        content_language=stored.get("content_language", legacy_language),
+        ui_language=_resolve_language(stored.get("ui_language"), legacy_language),
+        content_language=_resolve_language(stored.get("content_language"), legacy_language),
         supported_languages=SUPPORTED_LANGUAGES,
     )
 

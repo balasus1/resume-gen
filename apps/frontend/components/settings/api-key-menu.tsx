@@ -85,27 +85,27 @@ export default function ApiKeyMenu(): React.ReactElement {
       <button
         type="button"
         onClick={handleToggle}
-        className="inline-flex items-center gap-2 rounded-none border-2 border-black bg-white px-3 py-2 text-black shadow-sw-sm transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
+        className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#1E1E20] px-3 py-2 text-[#F5F5F5] transition-colors hover:bg-white/10"
       >
         <span className="font-semibold">{t('settings.apiKeyMenu.buttonLabel')}</span>
-        <span className="font-mono text-xs text-ink-soft">{maskedKey}</span>
+        <span className="font-mono text-xs text-[#A1A1AA]">{maskedKey}</span>
         <ChevronDown className="h-4 w-4" />
       </button>
       {isOpen ? (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/20"
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
             onClick={handleClose}
             aria-hidden="true"
           />
-          <div className="absolute right-0 z-50 mt-2 w-80 rounded-none border-2 border-black bg-white p-4 shadow-sw-default">
-            <h3 className="font-serif text-base font-semibold text-black mb-2">
+          <div className="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-white/10 bg-[#161618] p-4 shadow-2xl text-[#F5F5F5]">
+            <h3 className="font-mono text-sm font-semibold uppercase text-[#F5F5F5] mb-2">
               {t('settings.apiKeyMenu.title')}
             </h3>
-            <p className="text-xs text-ink-soft mb-3">{t('settings.apiKeyMenu.description')}</p>
+            <p className="text-xs text-[#A1A1AA] mb-3">{t('settings.apiKeyMenu.description')}</p>
             <label
               htmlFor="llmKey"
-              className="font-mono text-xs font-medium uppercase tracking-wider text-ink-soft"
+              className="font-mono text-xs font-medium uppercase tracking-wider text-[#A1A1AA]"
             >
               {t('settings.apiKey')}
             </label>

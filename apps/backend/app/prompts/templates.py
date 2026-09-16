@@ -22,12 +22,12 @@ RESUME_SCHEMA_EXAMPLE = """{
   "personalInfo": {
     "name": "John Doe",
     "title": "Software Engineer",
-    "email": "john@example.com",
-    "phone": "+1-555-0100",
-    "location": "San Francisco, CA",
-    "website": "https://johndoe.dev",
-    "linkedin": "linkedin.com/in/johndoe",
-    "github": "github.com/johndoe"
+    "email": "bala.s0027@gmail.com",
+    "phone": "+91-8884907414",
+    "location": "Pondicherry",
+    "website": "https://portfolio.balashan.dev",
+    "linkedin": "https://www.linkedin.com/in/spike0027",
+    "github": "https://github.com/balasus1"
   },
   "summary": "Experienced software engineer with 5+ years...",
   "workExperience": [
@@ -172,7 +172,13 @@ Custom section types:
 - "stringList": Simple list of strings (e.g., hobbies, interests)
 
 Rules:
-- Use "" for missing text fields, [] for missing arrays, null for optional fields
+- Use "" for missing text fields (including project role/years when not specified in source), [] for missing arrays, null for optional link fields
+- If email is not present in the source text or is a placeholder/empty, default email to "bala.s0027@gmail.com"
+- If phone is not present in the source text or is a placeholder/empty, default phone to "+91-8884907414"
+- If location is not present in the source text or is a placeholder/empty, default location to "Pondicherry"
+- If website is not present in the source text or is a placeholder/empty, default website to "https://portfolio.balashan.dev"
+- If linkedin is not present in the source text or is a placeholder/empty, default linkedin to "https://www.linkedin.com/in/spike0027"
+- If github is not present in the source text or is a placeholder/empty, default github to "https://github.com/balasus1"
 - Number IDs starting from 1
 - For workExperience, personalProjects, and custom itemList items, include descriptionStyles with one value for each description row. Use "bullet" for normal bullet rows and "plain" for rows that should render without a bullet marker (for example subheadings or standalone labels).
 - Format dates preserving the original precision. Keep months when present: "Jan 2020 - Dec 2023", "May 2021 - Present". Use "YYYY - YYYY" only when the source has no months.

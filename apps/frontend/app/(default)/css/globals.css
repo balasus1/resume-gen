@@ -4,8 +4,6 @@
 @source "../../../{app,components,hooks,lib,messages}/**/*.{js,ts,jsx,tsx,mdx}";
 
 @theme inline {
-  /* No --radius-* tokens — Swiss style commits to rounded-none everywhere.
-     Dead tokens removed. */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -38,33 +36,27 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Swiss Style brand tokens. --color-primary, --color-destructive,
-     --color-secondary, --color-background already exist above via the
-     legacy var(--xxx) chain — these are only the additional brand
-     semantics that didn't exist as @theme tokens before. */
-  --color-canvas: #f0f0e8;
-  --color-ink: #000000;
-  --color-success: #15803d;
-  --color-warning: #f97316;
+  /* Kimchi Platform Theme Tokens */
+  --color-canvas: #18181a;
+  --color-ink: #f5f5f5;
+  --color-success: #4ed996;
+  --color-warning: #ff521d;
 
-  /* Brand-tinted neutrals (OKLCH, chroma tinted ~0.005-0.018 toward
-     Hyper Blue hue 264) — replace ad-hoc Tailwind grays. */
-  --color-paper-tint: oklch(96% 0.005 264); /* replaces gray-50/100/200 */
-  --color-steel-grey: oklch(64% 0.012 264); /* replaces gray-300/400/500 */
-  --color-ink-soft: oklch(38% 0.018 264); /* replaces gray-600/700/800/900 */
+  --color-paper-tint: #1e1e20;
+  --color-steel-grey: #a1a1aa;
+  --color-ink-soft: #f5f5f5;
 
-  /* Hard offset shadows in solid ink — Swiss style commits to no blur.
-     Sized small (1px) through xl (12px) for Hero/featured surfaces. */
-  --shadow-sw-xs: 1px 1px 0px 0px #000000;
-  --shadow-sw-sm: 2px 2px 0px 0px #000000;
-  --shadow-sw-default: 4px 4px 0px 0px #000000;
-  --shadow-sw-card: 6px 6px 0px 0px #000000;
-  --shadow-sw-lg: 8px 8px 0px 0px #000000;
-  --shadow-sw-xl: 12px 12px 0px 0px #000000;
+  /* Kimchi Glow & Card Shadows */
+  --shadow-sw-xs: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+  --shadow-sw-sm: 0 4px 12px -3px rgba(0, 0, 0, 0.5);
+  --shadow-sw-default: 0 6px 20px -6px rgba(255, 82, 29, 0.35);
+  --shadow-sw-card: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  --shadow-sw-lg: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+  --shadow-sw-xl: 0 24px 60px -16px rgba(0, 0, 0, 0.85);
 
   /* Fonts */
-  --font-sans: 'Geist Sans', sans-serif;
-  --font-mono: 'Space Grotesk', monospace;
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
 
   /* Animations */
   --animate-gradient: gradient 8s linear infinite;
@@ -78,67 +70,79 @@
 
 :root {
   --font-mono: 'Geist Mono', monospace;
-  --font-sans: 'Geist', sans-serif;
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
 
-  /* Swiss International Style Palette */
-  --background: #f0f0e8; /* Canvas */
-  --foreground: #000000; /* Ink */
+  /* Kimchi Dark Developer Platform Palette */
+  --background: #18181a;
+  --foreground: #f5f5f5;
 
-  --card: #f0f0e8;
-  --card-foreground: #000000;
+  --card: #161618;
+  --card-foreground: #f5f5f5;
 
-  --popover: #f0f0e8;
-  --popover-foreground: #000000;
+  --popover: #1e1e22;
+  --popover-foreground: #f5f5f5;
 
-  --primary: #1d4ed8; /* Hyper Blue */
+  --primary: #ff521d; /* Kimchi Orange */
   --primary-foreground: #ffffff;
 
-  --secondary: #e5e5e0; /* Panel Grey */
-  --secondary-foreground: #000000;
+  --secondary: #1e1e20;
+  --secondary-foreground: #a1a1aa;
 
-  --muted: #e5e5e0;
-  --muted-foreground: #6b7280;
+  --muted: #1e1e20;
+  --muted-foreground: #a1a1aa;
 
-  --accent: #e5e5e0;
-  --accent-foreground: #000000;
+  --accent: #ff521d;
+  --accent-foreground: #ffffff;
 
-  --destructive: #dc2626; /* Alert Red */
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
 
-  --border: #000000;
-  --input: #f0f0e8;
-  --ring: #1d4ed8;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: #1e1e20;
+  --ring: #ff521d;
 
-  --chart-1: #1d4ed8;
-  --chart-2: #15803d;
-  --chart-3: #f97316;
-  --chart-4: #dc2626;
-  --chart-5: #000000;
+  --chart-1: #ff521d;
+  --chart-2: #4ed996;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #a1a1aa;
 
-  --sidebar: #e5e5e0;
-  --sidebar-foreground: #000000;
-  --sidebar-primary: #1d4ed8;
+  --sidebar: #161618;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #ff521d;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #d8d8d2;
-  --sidebar-accent-foreground: #000000;
-  --sidebar-border: #000000;
-  --sidebar-ring: #1d4ed8;
+  --sidebar-accent: #1e1e20;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #ff521d;
 }
-
-/* Light theme only — Swiss/Brutalist works on the warm Canvas background.
-   The half-finished dark mode mapping was removed; .impeccable.md commits
-   to light only. */
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    color: #f5f5f5;
+    background-color: #18181a;
   }
-  /* The global `button { font-family: var(--font-mono) }` rule was removed.
-     The Button component applies font-mono via its Tailwind classes, and the
-     global rule was leaking into nested text inside <button> elements. */
+}
+
+/* Custom Scrollbar for Kimchi Terminal Aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #18181a;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 82, 29, 0.5);
 }
 
 @media print {
@@ -188,86 +192,5 @@
   a {
     color: #000000 !important;
     text-decoration: none !important;
-  }
-}
-
-/* ============================================
-   PAGE BREAK CONTROL
-   Prevents individual items from being split
-   across pages during PDF generation.
-   NOTE: Sections CAN span pages - only individual
-   items (job entries, project entries) stay together.
-   ============================================ */
-
-/* Individual items should stay together (job entries, projects, etc.) */
-.resume-body .resume-item {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-/* Section titles should not be orphaned at bottom of page */
-.resume-body .resume-section-title,
-.resume-body .resume-section-title-sm {
-  break-after: avoid;
-  page-break-after: avoid;
-  /* Ensure at least 3 lines of content follow the header before a page break */
-  orphans: 3;
-  widows: 3;
-}
-
-/* Keep section header together with its first item */
-.resume-body .resume-section {
-  break-inside: auto; /* Allow sections to span pages */
-}
-
-/* Ensure the header + first content element stay together */
-.resume-body .resume-section-title + .resume-items > *:first-child,
-.resume-body .resume-section-title-sm + .resume-items > *:first-child,
-.resume-body .resume-section-title + p,
-.resume-body .resume-section-title-sm + p,
-.resume-body .resume-section-title + ul,
-.resume-body .resume-section-title-sm + ul,
-.resume-body .resume-section-title + .resume-item,
-.resume-body .resume-section-title-sm + .resume-item {
-  break-before: avoid;
-  page-break-before: avoid;
-}
-
-/* Generic no-break class for any element */
-.resume-body [data-no-break] {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-/* Print-specific overrides for resume templates */
-@media print {
-  .resume-body {
-    padding: var(--margin-top) var(--margin-right) var(--margin-bottom) var(--margin-left) !important;
-  }
-
-  .resume-body .resume-section-title,
-  .resume-body .resume-section-title-sm {
-    border-bottom-color: #9ca3af !important;
-    break-after: avoid !important;
-    page-break-after: avoid !important;
-  }
-
-  /* Reinforce page break rules in print - only for individual items */
-  .resume-body .resume-item {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-
-  /* Keep section header with first content in print */
-  .resume-body .resume-section-title + .resume-items > *:first-child,
-  .resume-body .resume-section-title-sm + .resume-items > *:first-child,
-  .resume-body .resume-section-title + p,
-  .resume-body .resume-section-title-sm + p,
-  .resume-body .resume-section-title + ul,
-  .resume-body .resume-section-title-sm + ul,
-  .resume-body .resume-section-title + .resume-item,
-  .resume-body .resume-section-title-sm + .resume-item {
-    break-before: avoid !important;
-    page-break-before: avoid !important;
   }
 }
