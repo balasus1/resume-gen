@@ -80,7 +80,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(
-    title="Resume Matcher API",
+    title="Resume Gen API",
     description="AI-powered resume tailoring for job descriptions",
     version=__version__,
     lifespan=lifespan,
@@ -119,7 +119,7 @@ app.include_router(resume_wizard_router, prefix="/api/v1")
 async def root():
     """Root endpoint."""
     return {
-        "name": "Resume Matcher API",
+        "name": "Resume Gen API",
         "version": __version__,
         "docs": "/docs",
     }

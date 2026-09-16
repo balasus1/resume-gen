@@ -35,10 +35,10 @@ export const SwissGrid = ({ children }: { children: React.ReactNode }) => {
         <div className="flex items-center gap-6">
           <Link href="/dashboard" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-lg bg-[#FF521D] flex items-center justify-center text-white font-bold font-mono text-sm shadow-[0_2px_10px_-2px_rgba(255,82,29,0.5)] group-hover:scale-105 transition-transform">
-              RM
+              RG
             </div>
             <span className="font-sans text-sm font-bold tracking-tight text-white group-hover:text-[#FF521D] transition-colors">
-              Resume Matcher
+              Resume Gen
             </span>
           </Link>
           <span className="hidden sm:inline-block font-mono text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-[#A1A1AA]">
@@ -70,15 +70,6 @@ export const SwissGrid = ({ children }: { children: React.ReactNode }) => {
 
         {/* Right Actions / Metadata */}
         <div className="flex items-center gap-3">
-          <a
-            href="https://github.com/srbhr/Resume-Matcher"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-1.5 h-7 px-3 text-xs font-mono font-medium text-[#A1A1AA] bg-transparent border border-white/12 rounded-md hover:border-white/30 hover:text-white hover:bg-white/5 transition-all"
-          >
-            <Github className="w-3.5 h-3.5 text-white" />
-            <span>GitHub</span>
-          </a>
           <Link
             href="/tailor"
             className="inline-flex items-center justify-center h-8 px-3.5 text-xs font-medium text-white bg-[#FF521D] rounded-lg shadow-[0_4px_16px_-4px_rgba(255,82,29,0.4)] hover:bg-[#E04515] hover:scale-[1.02] transition-all"
