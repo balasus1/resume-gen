@@ -195,6 +195,58 @@ class TestUpdateOutreachMessage:
         assert resp.status_code == 200
 
 
+class TestGenerateCoverLetter:
+    """POST /api/v1/resumes/{resume_id}/generate-cover-letter"""
+
+    @patch("app.routers.resumes.get_content_language", return_value="en")
+    @patch("app.routers.resumes.generate_cover_letter", new_callable=AsyncMock)
+    @patch("app.routers.resumes.db", new_callable=AsyncMock)
+    async def test_success_for_master_resume_without_jd(
+        self, mock_db, mock_generate, _mock_language, client, mock_resume_record, sample_resume
+    ):
+        master = {
+            **mock_resume_record,
+            "parent_id": None,
+            "processed_data": sample_resume,
+        }
+        mock_db.get_resume.return_value = master
+        mock_generate.return_value = "Generic cover letter text"
+
+        async with client:
+            resp = await client.post("/api/v1/resumes/res-123/generate-cover-letter")
+
+        assert resp.status_code == 200
+        assert resp.json()["content"] == "Generic cover letter text"
+        mock_generate.assert_awaited_once_with(sample_resume, None, "en")
+        mock_db.update_resume.assert_awaited_once_with("res-123", {"cover_letter": "Generic cover letter text"})
+
+
+class TestGenerateOutreach:
+    """POST /api/v1/resumes/{resume_id}/generate-outreach"""
+
+    @patch("app.routers.resumes.get_content_language", return_value="en")
+    @patch("app.routers.resumes.generate_outreach_message", new_callable=AsyncMock)
+    @patch("app.routers.resumes.db", new_callable=AsyncMock)
+    async def test_success_for_master_resume_without_jd(
+        self, mock_db, mock_generate, _mock_language, client, mock_resume_record, sample_resume
+    ):
+        master = {
+            **mock_resume_record,
+            "parent_id": None,
+            "processed_data": sample_resume,
+        }
+        mock_db.get_resume.return_value = master
+        mock_generate.return_value = "Generic outreach message text"
+
+        async with client:
+            resp = await client.post("/api/v1/resumes/res-123/generate-outreach")
+
+        assert resp.status_code == 200
+        assert resp.json()["content"] == "Generic outreach message text"
+        mock_generate.assert_awaited_once_with(sample_resume, None, "en")
+        mock_db.update_resume.assert_awaited_once_with("res-123", {"outreach_message": "Generic outreach message text"})
+
+
 class TestGenerateInterviewPrep:
     """POST /api/v1/resumes/{resume_id}/generate-interview-prep"""
 
@@ -228,15 +280,27 @@ class TestGenerateInterviewPrep:
         saved_payload = json.loads(update_payload["interview_prep"])
         assert saved_payload == SAMPLE_INTERVIEW_PREP
 
+    @patch("app.routers.resumes.get_content_language", return_value="en")
+    @patch("app.routers.resumes.generate_interview_prep", new_callable=AsyncMock)
     @patch("app.routers.resumes.db", new_callable=AsyncMock)
-    async def test_rejects_non_tailored_resume(self, mock_db, client, mock_resume_record):
-        mock_db.get_resume.return_value = mock_resume_record
+    async def test_success_for_master_resume_without_jd(
+        self, mock_db, mock_generate, _mock_language, client, mock_resume_record, sample_resume
+    ):
+        master = {
+            **mock_resume_record,
+            "parent_id": None,
+            "processed_data": sample_resume,
+        }
+        mock_db.get_resume.return_value = master
+        mock_generate.return_value = InterviewPrepData.model_validate(SAMPLE_INTERVIEW_PREP)
 
         async with client:
             resp = await client.post("/api/v1/resumes/res-123/generate-interview-prep")
 
-        assert resp.status_code == 400
-        assert "tailored resumes" in resp.json()["detail"]
+        assert resp.status_code == 200
+        mock_generate.assert_awaited_once_with(sample_resume, None, "en")
+        update_payload = mock_db.update_resume.await_args.args[1]
+        assert json.loads(update_payload["interview_prep"]) == SAMPLE_INTERVIEW_PREP
 
     @patch("app.routers.resumes.db", new_callable=AsyncMock)
     async def test_rejects_missing_improvement_context(

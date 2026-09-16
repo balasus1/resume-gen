@@ -368,7 +368,7 @@ describe('builder attachment persistence', () => {
     const Builder = await importBuilder();
     render(<Builder />);
     const input = await screen.findByDisplayValue('SERVER OUTREACH');
-    const storage = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    const storage = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
       throw new DOMException('Quota exceeded', 'QuotaExceededError');
     });
     try {

@@ -269,12 +269,12 @@ describe('resume builder autosave', () => {
   it('reports unavailable browser backup and gives a truthful leave warning', async () => {
     fetchResume.mockResolvedValue({ processed_resume: REAL_RESUME, parent_id: null, title: 'r' });
     updateResume.mockRejectedValue(new Error('offline'));
-    const nativeSetItem = Storage.prototype.setItem;
-    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(function (this: Storage, key, value) {
+    const nativeSetItem = localStorage.setItem.bind(localStorage);
+    vi.spyOn(localStorage, 'setItem').mockImplementation((key: string, value: string) => {
       if (key.startsWith('resume_builder_draft:')) {
         throw new DOMException('quota', 'QuotaExceededError');
       }
-      return nativeSetItem.call(this, key, value);
+      return nativeSetItem(key, value);
     });
 
     const ResumeBuilder = await importBuilder();

@@ -225,7 +225,13 @@
       "coverLetterFooter": "提示：先完成简历定制效果更佳。",
       "outreachFooter": "提示：尽量简短并加入个性化细节。",
       "interviewPrepDescription": "基于已定制简历和职位描述生成针对性的面试准备内容。",
-      "interviewPrepFooter": "提示：定制简历后使用，准备真实且基于简历证据的回答。"
+      "interviewPrepFooter": "提示：定制简历后使用，准备真实且基于简历证据的回答。",
+      "masterCoverLetterDescription": "生成突出你的职业经历与成果的通用专业求职信。",
+      "masterCoverLetterFooter": "提示：适用于人脉拓展与自荐求职。",
+      "masterOutreachDescription": "生成介绍你的专业背景与特长的人脉拓展沟通消息。",
+      "masterOutreachFooter": "提示：保持简明扼要与专业态度。",
+      "masterInterviewPrepDescription": "基于你的简历工作经历生成面试准备与深度追问问题。",
+      "masterInterviewPrepFooter": "提示：针对你过去的经历准备行为面试与技术问题。"
     },
     "regenerateDialog": {
       "title": "重新生成 {title}？",

@@ -87,12 +87,12 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
   return (
     <div
-      className={`space-y-0 border p-6 bg-white shadow-sw-default ${
-        isHidden ? 'border-dashed border-steel-grey opacity-60' : 'border-black'
+      className={`space-y-0 border p-6 bg-[#27272a] text-white shadow-sw-sm ${
+        isHidden ? 'border-dashed border-white/20 opacity-60' : 'border-white/10'
       }`}
     >
       {/* Section Header */}
-      <div className="flex justify-between items-center border-b border-black pb-2 mb-4">
+      <div className="flex justify-between items-center border-b border-white/10 pb-2 mb-4">
         {/* Section Name (editable) */}
         <div className="flex items-center gap-2">
           {isEditing ? (
@@ -101,13 +101,13 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="h-8 w-48 rounded-none border-black font-serif text-lg font-bold"
+                className="h-8 w-48 rounded-none border border-white/20 bg-[#1e1e20] text-white font-serif text-lg font-bold"
                 autoFocus
               />
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-green-700 hover:text-green-800 hover:bg-green-50"
+                className="h-8 w-8 text-green-400 hover:text-green-300 hover:bg-green-950/40"
                 onClick={handleSaveEdit}
                 aria-label={t('common.save')}
                 title={t('common.save')}
@@ -117,7 +117,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-steel-grey hover:text-ink-soft hover:bg-paper-tint"
+                className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10"
                 onClick={handleCancelEdit}
                 aria-label={t('common.cancel')}
                 title={t('common.cancel')}
@@ -127,17 +127,12 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
             </div>
           ) : (
             <>
-              <h3 className="font-serif text-xl font-bold">{section.displayName}</h3>
+              <h3 className="font-serif text-xl font-bold text-white">{section.displayName}</h3>
               {!isPersonalInfo && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  // Visible 24×24 (matches the small inline pencil aesthetic
-                  // next to the section title), but the touch area is
-                  // extended to 44×44 via -inset-[10px] to meet WCAG 2.5.8.
-                  // The default Button overlay (-inset-1.5) only gives 36×36
-                  // for h-6 buttons; this override adds 4 more px per side.
-                  className="h-6 w-6 text-steel-grey hover:text-ink-soft before:-inset-[10px]"
+                  className="h-6 w-6 text-zinc-400 hover:text-white hover:bg-white/10 before:-inset-[10px]"
                   onClick={handleStartEdit}
                   aria-label={t('builder.sectionHeader.renameSection')}
                   title={t('builder.sectionHeader.renameSection')}
@@ -146,12 +141,12 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
                 </Button>
               )}
               {!section.isDefault && (
-                <span className="font-mono text-[10px] uppercase tracking-wider text-steel-grey bg-paper-tint px-1.5 py-0.5 border border-paper-tint">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-300 bg-[#1e1e20] px-1.5 py-0.5 border border-white/10">
                   {t('builder.sectionHeader.customTag')}
                 </span>
               )}
               {isHidden && (
-                <span className="font-mono text-[10px] uppercase tracking-wider text-orange-600 bg-white px-1.5 py-0.5 border border-orange-500">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-orange-400 bg-orange-950/40 px-1.5 py-0.5 border border-orange-500/50">
                   {t('builder.sectionHeader.hiddenFromPdfTag')}
                 </span>
               )}
@@ -161,15 +156,11 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
 
         {/* Section Controls */}
         <div className="flex items-center gap-1">
-          {/* Visibility Toggle. The parent container already applies
-              opacity-60 when hidden (line 91), which carries the visual
-              "faded" cue for the hidden state. A conditional text color
-              here would be redundant — just use steel-grey. */}
           {!isPersonalInfo && (
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-steel-grey"
+              className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10"
               onClick={onToggleVisibility}
               aria-label={
                 section.isVisible
@@ -192,7 +183,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-steel-grey hover:text-ink-soft disabled:opacity-30"
+              className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30"
               onClick={onMoveUp}
               disabled={isFirst}
               aria-label={t('builder.sectionHeader.moveUp')}
@@ -207,7 +198,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-steel-grey hover:text-ink-soft disabled:opacity-30"
+              className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-white/10 disabled:opacity-30"
               onClick={onMoveDown}
               disabled={isLast}
               aria-label={t('builder.sectionHeader.moveDown')}

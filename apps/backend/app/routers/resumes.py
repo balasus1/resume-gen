@@ -2189,42 +2189,29 @@ async def update_title(resume_id: str, request: UpdateTitleRequest) -> dict:
     "/{resume_id}/generate-cover-letter", response_model=GenerateContentResponse
 )
 async def generate_cover_letter_endpoint(resume_id: str) -> GenerateContentResponse:
-    """Generate a cover letter on-demand for an existing tailored resume.
-
-    This endpoint allows users to generate a cover letter after a resume has been
-    tailored, without needing to re-tailor the entire resume. It requires:
-    - The resume must be a tailored resume (has parent_id)
-    - The resume must have an associated job context in the improvements table
-    """
+    """Generate a cover letter on-demand for a resume (tailored or master)."""
     # Get the resume
     resume = await db.get_resume(resume_id)
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
 
-    # Check if it's a tailored resume (has parent_id)
-    if not resume.get("parent_id"):
-        raise HTTPException(
-            status_code=400,
-            detail="Cover letter can only be generated for tailored resumes. "
-            "Please tailor this resume to a job description first.",
-        )
-
-    # Get improvement record to find the job_id
-    improvement = await db.get_improvement_by_tailored_resume(resume_id)
-    if not improvement:
-        raise HTTPException(
-            status_code=400,
-            detail="No job context found for this resume. "
-            "The resume may have been created before job tracking was implemented.",
-        )
-
-    # Get the job description
-    job = await db.get_job(improvement["job_id"])
-    if not job:
-        raise HTTPException(
-            status_code=404,
-            detail="The associated job description was not found.",
-        )
+    job_content: str | None = None
+    job: dict[str, Any] | None = None
+    if resume.get("parent_id"):
+        improvement = await db.get_improvement_by_tailored_resume(resume_id)
+        if not improvement:
+            raise HTTPException(
+                status_code=400,
+                detail="No job context found for this resume. "
+                "The resume may have been created before job tracking was implemented.",
+            )
+        job = await db.get_job(improvement["job_id"])
+        if not job:
+            raise HTTPException(
+                status_code=404,
+                detail="The associated job description was not found.",
+            )
+        job_content = job.get("content")
 
     # Get resume data
     resume_data = resume.get("processed_data")
@@ -2241,7 +2228,7 @@ async def generate_cover_letter_endpoint(resume_id: str) -> GenerateContentRespo
     # Generate cover letter
     try:
         cover_letter_content = await generate_cover_letter(
-            resume_data, job["content"], language
+            resume_data, job_content, language
         )
     except (DatabaseBusyError, AIOperationDeadlineExceeded, PromptSizeError):
         raise
@@ -2263,42 +2250,29 @@ async def generate_cover_letter_endpoint(resume_id: str) -> GenerateContentRespo
 
 @router.post("/{resume_id}/generate-outreach", response_model=GenerateContentResponse)
 async def generate_outreach_endpoint(resume_id: str) -> GenerateContentResponse:
-    """Generate an outreach message on-demand for an existing tailored resume.
-
-    This endpoint allows users to generate a cold outreach message after a resume
-    has been tailored. It requires:
-    - The resume must be a tailored resume (has parent_id)
-    - The resume must have an associated job context in the improvements table
-    """
+    """Generate an outreach message on-demand for a resume (tailored or master)."""
     # Get the resume
     resume = await db.get_resume(resume_id)
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
 
-    # Check if it's a tailored resume (has parent_id)
-    if not resume.get("parent_id"):
-        raise HTTPException(
-            status_code=400,
-            detail="Outreach message can only be generated for tailored resumes. "
-            "Please tailor this resume to a job description first.",
-        )
-
-    # Get improvement record to find the job_id
-    improvement = await db.get_improvement_by_tailored_resume(resume_id)
-    if not improvement:
-        raise HTTPException(
-            status_code=400,
-            detail="No job context found for this resume. "
-            "The resume may have been created before job tracking was implemented.",
-        )
-
-    # Get the job description
-    job = await db.get_job(improvement["job_id"])
-    if not job:
-        raise HTTPException(
-            status_code=404,
-            detail="The associated job description was not found.",
-        )
+    job_content: str | None = None
+    job: dict[str, Any] | None = None
+    if resume.get("parent_id"):
+        improvement = await db.get_improvement_by_tailored_resume(resume_id)
+        if not improvement:
+            raise HTTPException(
+                status_code=400,
+                detail="No job context found for this resume. "
+                "The resume may have been created before job tracking was implemented.",
+            )
+        job = await db.get_job(improvement["job_id"])
+        if not job:
+            raise HTTPException(
+                status_code=404,
+                detail="The associated job description was not found.",
+            )
+        job_content = job.get("content")
 
     # Get resume data
     resume_data = resume.get("processed_data")
@@ -2315,7 +2289,7 @@ async def generate_outreach_endpoint(resume_id: str) -> GenerateContentResponse:
     # Generate outreach message
     try:
         outreach_content = await generate_outreach_message(
-            resume_data, job["content"], language
+            resume_data, job_content, language
         )
     except (DatabaseBusyError, AIOperationDeadlineExceeded, PromptSizeError):
         raise
@@ -2342,32 +2316,28 @@ async def generate_outreach_endpoint(resume_id: str) -> GenerateContentResponse:
 async def generate_interview_prep_endpoint(
     resume_id: str,
 ) -> GenerateInterviewPrepResponse:
-    """Generate interview preparation on-demand for an existing tailored resume."""
+    """Generate interview preparation on-demand for a resume (tailored or master)."""
     resume = await db.get_resume(resume_id)
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
 
-    if not resume.get("parent_id"):
-        raise HTTPException(
-            status_code=400,
-            detail="Interview preparation can only be generated for tailored resumes. "
-            "Please tailor this resume to a job description first.",
-        )
-
-    improvement = await db.get_improvement_by_tailored_resume(resume_id)
-    if not improvement:
-        raise HTTPException(
-            status_code=400,
-            detail="No job context found for this resume. "
-            "The resume may have been created before job tracking was implemented.",
-        )
-
-    job = await db.get_job(improvement["job_id"])
-    if not job:
-        raise HTTPException(
-            status_code=404,
-            detail="The associated job description was not found.",
-        )
+    job_content: str | None = None
+    job: dict[str, Any] | None = None
+    if resume.get("parent_id"):
+        improvement = await db.get_improvement_by_tailored_resume(resume_id)
+        if not improvement:
+            raise HTTPException(
+                status_code=400,
+                detail="No job context found for this resume. "
+                "The resume may have been created before job tracking was implemented.",
+            )
+        job = await db.get_job(improvement["job_id"])
+        if not job:
+            raise HTTPException(
+                status_code=404,
+                detail="The associated job description was not found.",
+            )
+        job_content = job.get("content")
 
     resume_data = resume.get("processed_data")
     if not resume_data:
@@ -2382,7 +2352,7 @@ async def generate_interview_prep_endpoint(
     try:
         interview_prep = await generate_interview_prep(
             resume_data,
-            job["content"],
+            job_content,
             language,
         )
     except (DatabaseBusyError, AIOperationDeadlineExceeded, PromptSizeError):

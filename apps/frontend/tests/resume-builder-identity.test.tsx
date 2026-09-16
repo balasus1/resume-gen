@@ -417,7 +417,7 @@ it('does not claim a restored backup if its source disappeared and the scoped wr
   render(<Builder />);
   await tick(0);
   localStorage.removeItem('resume_builder_draft:res-1');
-  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+  vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
     throw new Error('quota');
   });
   await act(async () =>
@@ -530,11 +530,11 @@ describe('builder acknowledgement of wizard completion', () => {
   it('can retire the receipt on a later loaded visit after storage recovers', async () => {
     writeResumeWizardCompletion('res-1');
     fetchResume.mockResolvedValue({ processed_resume: REAL_RESUME });
-    const originalRemove = Storage.prototype.removeItem;
-    const remove = vi.spyOn(Storage.prototype, 'removeItem');
-    remove.mockImplementation(function (this: Storage, key: string) {
+    const originalRemove = localStorage.removeItem.bind(localStorage);
+    const remove = vi.spyOn(localStorage, 'removeItem');
+    remove.mockImplementation((key: string) => {
       if (key === 'resume_wizard_draft') throw new Error('Storage unavailable');
-      originalRemove.call(this, key);
+      originalRemove(key);
     });
     const Builder = await importBuilder();
     const first = render(<Builder />);

@@ -225,7 +225,13 @@
       "coverLetterFooter": "Conseil : personnalisez d'abord pour de meilleurs résultats.",
       "outreachFooter": "Conseil : restez bref et personnalisé.",
       "interviewPrepDescription": "Générez une préparation à l'entretien spécifique au poste, basée sur votre CV personnalisé et la fiche de poste.",
-      "interviewPrepFooter": "Conseil : utilisez cette fonction après la personnalisation pour préparer des réponses sincères et fondées sur votre CV."
+      "interviewPrepFooter": "Conseil : utilisez cette fonction après la personnalisation pour préparer des réponses sincères et fondées sur votre CV.",
+      "masterCoverLetterDescription": "Générez une lettre de motivation générale et professionnelle mettant en valeur votre parcours et vos réussites.",
+      "masterCoverLetterFooter": "Conseil : idéal pour le réseautage et les candidatures spontanées.",
+      "masterOutreachDescription": "Générez un message de prise de contact présentant votre profil et vos compétences clés.",
+      "masterOutreachFooter": "Conseil : restez bref et professionnel.",
+      "masterInterviewPrepDescription": "Générez une préparation d'entretien et des questions approfondies basées sur l'expérience de votre CV.",
+      "masterInterviewPrepFooter": "Conseil : préparez-vous aux questions comportementales et techniques sur votre parcours."
     },
     "regenerateDialog": {
       "title": "Régénérer {title} ?",

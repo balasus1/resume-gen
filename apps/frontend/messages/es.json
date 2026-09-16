@@ -225,7 +225,13 @@
       "coverLetterFooter": "Consejo: adapta primero para mejores resultados.",
       "outreachFooter": "Consejo: manténlo breve y personalizado.",
       "interviewPrepDescription": "Genera preparación para entrevistas según tu currículum adaptado y la descripción del puesto.",
-      "interviewPrepFooter": "Consejo: úsalo después de adaptar el currículum para preparar respuestas veraces basadas en evidencia."
+      "interviewPrepFooter": "Consejo: úsalo después de adaptar el currículum para preparar respuestas veraces basadas en evidencia.",
+      "masterCoverLetterDescription": "Genera una carta de presentación general y profesional destacando tu trayectoria y logros.",
+      "masterCoverLetterFooter": "Consejo: útil para networking y candidaturas espontáneas.",
+      "masterOutreachDescription": "Genera un mensaje de contacto para presentar tu experiencia y especialidad profesional.",
+      "masterOutreachFooter": "Consejo: manténlo breve y profesional.",
+      "masterInterviewPrepDescription": "Genera preparación para entrevistas y preguntas detalladas basadas en la experiencia de tu currículum.",
+      "masterInterviewPrepFooter": "Consejo: prepárate para preguntas conductuales y técnicas sobre tu trayectoria."
     },
     "regenerateDialog": {
       "title": "¿Regenerar {title}?",

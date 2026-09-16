@@ -178,7 +178,7 @@ export const GenericItemForm: React.FC<GenericItemFormProps> = ({
 
       <div className="space-y-8">
         {items.map((item) => (
-          <div key={item.id} className="p-6 border border-black bg-paper-tint relative group">
+          <div key={item.id} className="p-6 border border-white/10 bg-[#1e1e20] relative group shadow-sm">
             <Button
               variant="ghost"
               size="icon"
@@ -192,52 +192,52 @@ export const GenericItemForm: React.FC<GenericItemFormProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 pr-8">
               <div className="space-y-2">
-                <Label className="font-mono text-xs uppercase tracking-wider text-steel-grey">
+                <Label className="font-mono text-xs uppercase tracking-wider text-zinc-300">
                   {t('builder.genericItemForm.fields.title')}
                 </Label>
                 <Input
                   value={item.title || ''}
                   onChange={(e) => handleChange(item.id, 'title', e.target.value)}
                   placeholder={finalTitlePlaceholder}
-                  className="rounded-none border-black bg-white"
+                  className="rounded-none border border-white/10 bg-[#27272a] text-white placeholder:text-zinc-500"
                 />
               </div>
               {showSubtitle && (
                 <div className="space-y-2">
-                  <Label className="font-mono text-xs uppercase tracking-wider text-steel-grey">
+                  <Label className="font-mono text-xs uppercase tracking-wider text-zinc-300">
                     {t('builder.genericItemForm.fields.organization')}
                   </Label>
                   <Input
                     value={item.subtitle || ''}
                     onChange={(e) => handleChange(item.id, 'subtitle', e.target.value)}
                     placeholder={finalSubtitlePlaceholder}
-                    className="rounded-none border-black bg-white"
+                    className="rounded-none border border-white/10 bg-[#27272a] text-white placeholder:text-zinc-500"
                   />
                 </div>
               )}
               {showLocation && (
                 <div className="space-y-2">
-                  <Label className="font-mono text-xs uppercase tracking-wider text-steel-grey">
+                  <Label className="font-mono text-xs uppercase tracking-wider text-zinc-300">
                     {t('builder.genericItemForm.fields.location')}
                   </Label>
                   <Input
                     value={item.location || ''}
                     onChange={(e) => handleChange(item.id, 'location', e.target.value)}
                     placeholder={finalLocationPlaceholder}
-                    className="rounded-none border-black bg-white"
+                    className="rounded-none border border-white/10 bg-[#27272a] text-white placeholder:text-zinc-500"
                   />
                 </div>
               )}
               {showYears && (
                 <div className="space-y-2">
-                  <Label className="font-mono text-xs uppercase tracking-wider text-steel-grey">
+                  <Label className="font-mono text-xs uppercase tracking-wider text-zinc-300">
                     {t('builder.genericItemForm.fields.years')}
                   </Label>
                   <Input
                     value={item.years || ''}
                     onChange={(e) => handleChange(item.id, 'years', e.target.value)}
                     placeholder={finalYearsPlaceholder}
-                    className="rounded-none border-black bg-white"
+                    className="rounded-none border border-white/10 bg-[#27272a] text-white placeholder:text-zinc-500"
                   />
                 </div>
               )}
@@ -245,14 +245,14 @@ export const GenericItemForm: React.FC<GenericItemFormProps> = ({
 
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <Label className="font-mono text-xs uppercase tracking-wider text-steel-grey">
+                <Label className="font-mono text-xs uppercase tracking-wider text-zinc-300">
                   {t('builder.genericItemForm.fields.descriptionPoints')}
                 </Label>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleAddDescription(item.id)}
-                  className="h-6 text-xs text-blue-700 hover:text-blue-800 hover:bg-blue-50"
+                  className="h-6 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-950/30"
                 >
                   <Plus className="w-3 h-3 mr-1" /> {t('builder.genericItemForm.actions.addPoint')}
                 </Button>

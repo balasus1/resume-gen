@@ -468,6 +468,93 @@ Content requirements:
 - Keep all suggested answer points factual and resume-grounded.
 - Do NOT use markdown fences or commentary outside the JSON."""
 
+GENERIC_COVER_LETTER_PROMPT = """Write a versatile, professional cover letter highlighting the candidate's career trajectory, key skills, and major accomplishments based on their resume.
+
+IMPORTANT: Write in {output_language}.
+
+Candidate Resume (JSON):
+{resume_data}
+
+Requirements:
+- 120-180 words maximum
+- 3-4 short, structured paragraphs:
+  - Opening: Strong, compelling introduction stating the candidate's professional identity and core areas of expertise.
+  - Middle: Highlight 2-3 significant career accomplishments, demonstrated technical or functional strengths, and proven problem-solving impact directly grounded in the resume.
+  - Closing: Professional, confident statement expressing availability to discuss suitable opportunities.
+- Do NOT use placeholder brackets like "[Company Name]" or "[Job Title]"—phrase it naturally so it stands as a complete, compelling profile.
+- Do NOT invent information not in the resume.
+- Tone: Confident peer and seasoned professional.
+- Do NOT use em dash ("—") anywhere in the writing/output, even if it exists, remove it.
+
+Output plain text only. No JSON, no markdown formatting."""
+
+GENERIC_OUTREACH_MESSAGE_PROMPT = """Generate a professional networking outreach message for LinkedIn or email introducing the candidate's background and expertise.
+
+IMPORTANT: Write in {output_language}.
+
+Candidate Resume (JSON):
+{resume_data}
+
+Guidelines:
+- 60-90 words maximum (brief networking note).
+- Concise opening stating primary domain of expertise and strongest career highlight/metric from the resume.
+- Low-friction networking ask (e.g., "Open to connecting and exploring synergies?").
+- Tone: How you'd message a respected professional peer, not an eager supplicant.
+- Do NOT include placeholder brackets like "[Name]" or "[Company]".
+- Do NOT use phrases like "passionate about" or "seeking an opportunity".
+- Do NOT use em dash ("—") anywhere in the writing/output, even if it exists, remove it.
+
+Output plain text only. No JSON, no markdown formatting."""
+
+GENERIC_INTERVIEW_PREP_PROMPT = """Generate comprehensive, structured interview preparation based on this candidate's resume experience and achievements.
+
+IMPORTANT: Write in {output_language}.
+Do NOT translate JSON property names. Keep every JSON key exactly as shown in the schema; translate only string values.
+
+Candidate Resume (JSON):
+{resume_data}
+
+Truthfulness guardrails:
+- Use only evidence from the resume JSON.
+- Do NOT invent experience, tools, employers, metrics, certifications, skills, responsibilities, education, projects, or claims beyond the provided evidence.
+- Suggest behavioral and experience-based interview questions that probe the candidate's real projects, technical decisions, leadership, and accomplishments.
+
+Return ONLY a valid JSON object with exactly these top-level keys:
+{{
+  "role_fit_analysis": ["Candidate core strength or profile summary based on resume evidence"],
+  "resume_questions": [
+    {{
+      "question": "Behavioral or technical interview question probing a specific experience or achievement",
+      "focus_area": "Experience, skill, or achievement being tested",
+      "suggested_answer_points": ["Truthful point based on resume evidence"]
+    }}
+  ],
+  "project_follow_ups": [
+    {{
+      "question": "Deep-dive question about a real project, technical architecture, or problem solved",
+      "focus_area": "Project name, architecture, tradeoff, or quantitative impact",
+      "suggested_answer_points": ["Truthful point based on resume evidence"]
+    }}
+  ],
+  "skill_gaps": [
+    {{
+      "skill": "Growth area or advanced topic commonly expected at this experience level",
+      "why_it_matters": "Why interviewers may probe depth in this area",
+      "preparation_suggestion": "How to articulate learning agility and foundational knowledge"
+    }}
+  ],
+  "talking_points": ["Key career narrative or high-impact talking point grounded in the resume"]
+}}
+
+Content requirements:
+- role_fit_analysis: 3-5 bullets summarizing core professional profile.
+- resume_questions: 5-8 experience-grounded questions.
+- project_follow_ups: 3-6 deep-dive project questions.
+- skill_gaps: 2-4 preparation points on articulating depth and growth.
+- talking_points: 5-8 concise talking points for interviews.
+- Keep all suggested answer points factual and resume-grounded.
+- Do NOT use markdown fences or commentary outside the JSON."""
+
 GENERATE_TITLE_PROMPT = """Extract the job title and company name from this job description.
 
 IMPORTANT: Write in {output_language}.

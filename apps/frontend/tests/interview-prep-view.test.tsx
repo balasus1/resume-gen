@@ -122,4 +122,24 @@ describe('InterviewPrepView', () => {
     expect(screen.getByText('interviewPrep.missingContextDescription')).toBeInTheDocument();
     expect(screen.getByText('Backend API experience fits the role.')).toBeInTheDocument();
   });
+
+  it('renders generate prompt and allows generation for master resume', () => {
+    const onGenerate = vi.fn();
+    render(
+      <InterviewPrepView
+        interviewPrep={null}
+        isGenerating={false}
+        onGenerate={onGenerate}
+        isTailoredResume={false}
+        canGenerate={true}
+      />
+    );
+
+    const button = screen.getByRole('button', {
+      name: /builder\.generatePrompt\.generateButton/,
+    });
+    expect(button).toBeInTheDocument();
+    fireEvent.click(button);
+    expect(onGenerate).toHaveBeenCalledTimes(1);
+  });
 });

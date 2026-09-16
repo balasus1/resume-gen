@@ -225,7 +225,13 @@
       "coverLetterFooter": "Tip: tailor first for best results.",
       "outreachFooter": "Tip: keep it short and personalized.",
       "interviewPrepDescription": "Generate role-specific interview preparation based on your tailored resume and job description.",
-      "interviewPrepFooter": "Tip: use this after tailoring to prepare truthful, resume-grounded answers."
+      "interviewPrepFooter": "Tip: use this after tailoring to prepare truthful, resume-grounded answers.",
+      "masterCoverLetterDescription": "Generate a professional general cover letter highlighting your career experience and accomplishments.",
+      "masterCoverLetterFooter": "Tip: useful for networking and speculative applications.",
+      "masterOutreachDescription": "Generate a networking outreach message introducing your background and expertise.",
+      "masterOutreachFooter": "Tip: keep it brief and professional.",
+      "masterInterviewPrepDescription": "Generate interview preparation and deep-dive questions based on your resume experience.",
+      "masterInterviewPrepFooter": "Tip: prepare for behavioral and technical questions about your past experience."
     },
     "regenerateDialog": {
       "title": "Regenerate {title}?",

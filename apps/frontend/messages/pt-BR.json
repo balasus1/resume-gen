@@ -225,7 +225,13 @@
       "coverLetterFooter": "Dica: personalize primeiro para melhores resultados.",
       "outreachFooter": "Dica: mantenha curta e personalizada.",
       "interviewPrepDescription": "Gere preparação para entrevista com base no currículo adaptado e na descrição da vaga.",
-      "interviewPrepFooter": "Dica: use depois de adaptar o currículo para preparar respostas verdadeiras e baseadas em evidências."
+      "interviewPrepFooter": "Dica: use depois de adaptar o currículo para preparar respostas verdadeiras e baseadas em evidências.",
+      "masterCoverLetterDescription": "Gere uma carta de apresentação geral profissional destacando sua trajetória e conquistas.",
+      "masterCoverLetterFooter": "Dica: útil para networking e candidaturas espontâneas.",
+      "masterOutreachDescription": "Gere uma mensagem de contato para apresentar sua experiência e especialidade profissional.",
+      "masterOutreachFooter": "Dica: mantenha breve e profissional.",
+      "masterInterviewPrepDescription": "Gere preparação para entrevistas e perguntas aprofundadas com base na experiência do seu currículo.",
+      "masterInterviewPrepFooter": "Dica: prepare-se para perguntas comportamentais e técnicas sobre sua trajetória."
     },
     "regenerateDialog": {
       "title": "Regenerar {title}?",

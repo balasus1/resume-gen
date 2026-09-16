@@ -225,7 +225,13 @@
       "coverLetterFooter": "ヒント：先にカスタマイズすると精度が上がります。",
       "outreachFooter": "ヒント：短く、個別性を入れましょう。",
       "interviewPrepDescription": "カスタマイズ済み履歴書と求人内容に基づいて、職種別の面接準備を生成します。",
-      "interviewPrepFooter": "ヒント：カスタマイズ後に、履歴書の根拠に基づく正確な回答を準備しましょう。"
+      "interviewPrepFooter": "ヒント：カスタマイズ後に、履歴書の根拠に基づく正確な回答を準備しましょう。",
+      "masterCoverLetterDescription": "これまでの職務経歴と実績をアピールする汎用カバーレターを生成します。",
+      "masterCoverLetterFooter": "ヒント：ネットワーキングやオープンポジションへの応募に役立ちます。",
+      "masterOutreachDescription": "あなたの経験と強みを紹介するネットワーキング用メッセージを生成します。",
+      "masterOutreachFooter": "ヒント：簡潔かつプロフェッショナルにまとめましょう。",
+      "masterInterviewPrepDescription": "履歴書の職務経験に基づいた面接準備と質問事項を生成します。",
+      "masterInterviewPrepFooter": "ヒント：これまでの経歴に関する行動面接や技術的な質問に備えましょう。"
     },
     "regenerateDialog": {
       "title": "{title}を再生成しますか？",

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Loader2, FileText, Mail, MessagesSquare, ArrowRight } from 'lucide-react';
+import { Sparkles, Loader2, FileText, Mail, MessagesSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/lib/i18n';
 
@@ -36,31 +36,29 @@ export function GeneratePrompt({
       ? t('outreach.title')
       : t('coverLetter.title');
 
-  // Show a different message if resume is not tailored
-  if (!isTailoredResume) {
-    return (
-      <div
-        className={cn(
-          'flex flex-col items-center justify-center min-h-[400px] p-12 text-center',
-          className
-        )}
-      >
-        <div className="w-16 h-16 border-2 border-steel-grey bg-paper-tint flex items-center justify-center mb-6">
-          <Icon className="w-8 h-8 text-steel-grey" />
-        </div>
-        <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-ink-soft mb-3">
-          {t('builder.generatePrompt.notAvailableTitle', { title })}
-        </h3>
-        <p className="font-mono text-xs text-steel-grey max-w-md mb-6 leading-relaxed">
-          {t('builder.generatePrompt.notAvailableDescription', { title })}
-        </p>
-        <div className="flex items-center gap-2 text-blue-700 font-mono text-xs">
-          <span>{t('builder.generatePrompt.goToDashboard')}</span>
-          <ArrowRight className="w-4 h-4" />
-        </div>
-      </div>
-    );
-  }
+  const description = isTailoredResume
+    ? isInterviewPrep
+      ? t('builder.generatePrompt.interviewPrepDescription')
+      : isOutreach
+        ? t('builder.generatePrompt.outreachDescription')
+        : t('builder.generatePrompt.coverLetterDescription')
+    : isInterviewPrep
+      ? t('builder.generatePrompt.masterInterviewPrepDescription')
+      : isOutreach
+        ? t('builder.generatePrompt.masterOutreachDescription')
+        : t('builder.generatePrompt.masterCoverLetterDescription');
+
+  const footer = isTailoredResume
+    ? isInterviewPrep
+      ? t('builder.generatePrompt.interviewPrepFooter')
+      : isOutreach
+        ? t('builder.generatePrompt.outreachFooter')
+        : t('builder.generatePrompt.coverLetterFooter')
+    : isInterviewPrep
+      ? t('builder.generatePrompt.masterInterviewPrepFooter')
+      : isOutreach
+        ? t('builder.generatePrompt.masterOutreachFooter')
+        : t('builder.generatePrompt.masterCoverLetterFooter');
 
   return (
     <div
@@ -69,18 +67,14 @@ export function GeneratePrompt({
         className
       )}
     >
-      <div className="w-16 h-16 border-2 border-blue-700 bg-blue-50 flex items-center justify-center mb-6">
-        <Icon className="w-8 h-8 text-blue-700" />
+      <div className="w-16 h-16 border-2 border-blue-500/50 bg-blue-950/40 flex items-center justify-center mb-6">
+        <Icon className="w-8 h-8 text-blue-400" />
       </div>
-      <h3 className="font-mono text-sm font-bold uppercase tracking-wider mb-3">
+      <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-white mb-3">
         {t('builder.generatePrompt.generateTitle', { title })}
       </h3>
-      <p className="font-mono text-xs text-ink-soft max-w-md mb-6 leading-relaxed">
-        {isInterviewPrep
-          ? t('builder.generatePrompt.interviewPrepDescription')
-          : isOutreach
-            ? t('builder.generatePrompt.outreachDescription')
-            : t('builder.generatePrompt.coverLetterDescription')}
+      <p className="font-mono text-xs text-zinc-300 max-w-md mb-6 leading-relaxed">
+        {description}
       </p>
       <Button onClick={onGenerate} disabled={isGenerating} className="gap-2">
         {isGenerating ? (
@@ -95,12 +89,8 @@ export function GeneratePrompt({
           </>
         )}
       </Button>
-      <p className="font-mono text-xs text-steel-grey mt-4">
-        {isInterviewPrep
-          ? t('builder.generatePrompt.interviewPrepFooter')
-          : isOutreach
-            ? t('builder.generatePrompt.outreachFooter')
-            : t('builder.generatePrompt.coverLetterFooter')}
+      <p className="font-mono text-xs text-zinc-400 mt-4">
+        {footer}
       </p>
     </div>
   );

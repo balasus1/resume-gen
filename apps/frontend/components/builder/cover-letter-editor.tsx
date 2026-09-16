@@ -36,15 +36,15 @@ export function CoverLetterEditor({
   return (
     <div className={cn('flex flex-col h-full', className)}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b-2 border-black bg-[#F5F5F0]">
+      <div className="flex items-center justify-between p-4 border-b border-white/10 bg-[#1e1e20] text-white">
         <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4" />
-          <h2 className="font-mono text-sm font-bold uppercase tracking-wider">
+          <FileText className="w-4 h-4 text-blue-400" />
+          <h2 className="font-mono text-sm font-bold uppercase tracking-wider text-white">
             {t('coverLetter.title')}
           </h2>
         </div>
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-steel-grey">
+          <span className="font-mono text-xs text-zinc-400">
             {t('builder.contentStats.wordsChars', { wordCount, charCount })}
           </span>
           <Button size="sm" onClick={onSave} disabled={isSaving}>
@@ -64,17 +64,17 @@ export function CoverLetterEditor({
           className={cn(
             'w-full h-full min-h-[400px] p-4',
             'font-mono text-sm leading-relaxed',
-            'border-2 border-black bg-white',
+            'border border-white/10 bg-[#27272a] text-white',
             'resize-none',
-            'focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2',
-            'placeholder:text-steel-grey'
+            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-[#18181a]',
+            'placeholder:text-zinc-400'
           )}
         />
       </div>
 
       {/* Footer Tips */}
-      <div className="p-4 border-t border-paper-tint bg-[#F5F5F0]">
-        <p className="font-mono text-xs text-steel-grey">{t('coverLetter.editor.tip')}</p>
+      <div className="p-4 border-t border-white/10 bg-[#1e1e20]">
+        <p className="font-mono text-xs text-zinc-400">{t('coverLetter.editor.tip')}</p>
       </div>
     </div>
   );

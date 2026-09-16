@@ -117,26 +117,26 @@ export const LinkDialog: React.FC<LinkDialogProps> = ({ editor, onClose }) => {
       {/* Dialog */}
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <div
-          className="relative w-full max-w-md border-2 border-black bg-white shadow-sw-default p-6"
+          className="relative w-full max-w-md border border-white/10 bg-[#27272a] text-white shadow-sw-card p-6"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 opacity-70 transition-opacity hover:opacity-100"
+            className="absolute right-4 top-4 text-zinc-400 hover:text-white transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
 
           {/* Title */}
-          <h3 className="font-mono text-xs uppercase tracking-wider mb-4 text-ink-soft">
+          <h3 className="font-mono text-xs uppercase tracking-wider mb-4 text-white font-bold">
             [ {hasExistingLink ? 'EDIT LINK' : 'ADD LINK'} ]
           </h3>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Display Text */}
             <div className="space-y-2">
-              <Label htmlFor="link-text" className="font-mono text-xs uppercase tracking-wider">
+              <Label htmlFor="link-text" className="font-mono text-xs uppercase tracking-wider text-zinc-300">
                 Display Text
               </Label>
               <Input
@@ -144,14 +144,14 @@ export const LinkDialog: React.FC<LinkDialogProps> = ({ editor, onClose }) => {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Link text"
-                className="rounded-none border-black bg-white"
+                className="rounded-none border border-white/10 bg-[#1e1e20] text-white placeholder:text-zinc-500"
                 autoFocus
               />
             </div>
 
             {/* URL */}
             <div className="space-y-2">
-              <Label htmlFor="link-url" className="font-mono text-xs uppercase tracking-wider">
+              <Label htmlFor="link-url" className="font-mono text-xs uppercase tracking-wider text-zinc-300">
                 URL
               </Label>
               <Input
@@ -159,7 +159,7 @@ export const LinkDialog: React.FC<LinkDialogProps> = ({ editor, onClose }) => {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com"
-                className="rounded-none border-black bg-white"
+                className="rounded-none border border-white/10 bg-[#1e1e20] text-white placeholder:text-zinc-500"
               />
             </div>
 
@@ -170,7 +170,7 @@ export const LinkDialog: React.FC<LinkDialogProps> = ({ editor, onClose }) => {
                   Remove Link
                 </Button>
               )}
-              <Button type="button" variant="outline" size="sm" onClick={onClose}>
+              <Button type="button" variant="outline" size="sm" onClick={onClose} className="border-white/10 text-zinc-300 hover:text-white hover:bg-[#1e1e20]">
                 Cancel
               </Button>
               <Button type="submit" variant="default" size="sm">

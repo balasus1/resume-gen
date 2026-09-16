@@ -10,6 +10,8 @@ from app.llm import complete
 from app.prompts.templates import (
     COVER_LETTER_PROMPT,
     GENERATE_TITLE_PROMPT,
+    GENERIC_COVER_LETTER_PROMPT,
+    GENERIC_OUTREACH_MESSAGE_PROMPT,
     OUTREACH_MESSAGE_PROMPT,
 )
 from app.prompts import get_language_name
@@ -36,49 +38,49 @@ def _resolve_feature_prompt(
 
 async def generate_cover_letter(
     resume_data: dict[str, Any],
-    job_description: str,
+    job_description: str | None = None,
     language: str = "en",
 ) -> str:
-    """Generate a cover letter based on resume and job description.
+    """Generate a cover letter based on resume and optional job description.
 
     Args:
         resume_data: Structured resume data (ResumeData format)
-        job_description: Target job description text
+        job_description: Target job description text (None for generic cover letter)
         language: Output language code (en, es, zh, ja)
 
     Returns:
         Generated cover letter as plain text
     """
-    validate_source_size(job_description, MAX_JOB_CHARACTERS)
     output_language = get_language_name(language)
 
-    template, is_custom = _resolve_feature_prompt(
-        "cover_letter_prompt", COVER_LETTER_PROMPT
-    )
-    try:
-        prompt = template.format(
-            job_description=job_description,
+    if not job_description or not job_description.strip():
+        prompt = GENERIC_COVER_LETTER_PROMPT.format(
             resume_data=json.dumps(resume_data),
             output_language=output_language,
         )
-    except (KeyError, IndexError, ValueError) as e:
-        # str.format() raises KeyError for unknown placeholders, IndexError for
-        # positional out-of-range, and ValueError for unmatched/invalid braces
-        # (e.g., ``{foo``). If the failing template is the built-in default,
-        # something is broken upstream and the caller should see it — re-raise.
-        # If it's a user-supplied custom prompt, fall back to the default with a
-        # warning so generation doesn't crash on out-of-band disk edits.
-        if not is_custom:
-            raise
-        logging.warning(
-            "Custom cover letter prompt failed to format (%s); falling back to default",
-            e,
+    else:
+        validate_source_size(job_description, MAX_JOB_CHARACTERS)
+        template, is_custom = _resolve_feature_prompt(
+            "cover_letter_prompt", COVER_LETTER_PROMPT
         )
-        prompt = COVER_LETTER_PROMPT.format(
-            job_description=job_description,
-            resume_data=json.dumps(resume_data),
-            output_language=output_language,
-        )
+        try:
+            prompt = template.format(
+                job_description=job_description,
+                resume_data=json.dumps(resume_data),
+                output_language=output_language,
+            )
+        except (KeyError, IndexError, ValueError) as e:
+            if not is_custom:
+                raise
+            logging.warning(
+                "Custom cover letter prompt failed to format (%s); falling back to default",
+                e,
+            )
+            prompt = COVER_LETTER_PROMPT.format(
+                job_description=job_description,
+                resume_data=json.dumps(resume_data),
+                output_language=output_language,
+            )
 
     result = await complete(
         prompt=prompt,
@@ -91,44 +93,49 @@ async def generate_cover_letter(
 
 async def generate_outreach_message(
     resume_data: dict[str, Any],
-    job_description: str,
+    job_description: str | None = None,
     language: str = "en",
 ) -> str:
     """Generate a cold outreach message for networking.
 
     Args:
         resume_data: Structured resume data (ResumeData format)
-        job_description: Target job description text
+        job_description: Target job description text (None for generic outreach)
         language: Output language code (en, es, zh, ja)
 
     Returns:
         Generated outreach message as plain text
     """
-    validate_source_size(job_description, MAX_JOB_CHARACTERS)
     output_language = get_language_name(language)
 
-    template, is_custom = _resolve_feature_prompt(
-        "outreach_message_prompt", OUTREACH_MESSAGE_PROMPT
-    )
-    try:
-        prompt = template.format(
-            job_description=job_description,
+    if not job_description or not job_description.strip():
+        prompt = GENERIC_OUTREACH_MESSAGE_PROMPT.format(
             resume_data=json.dumps(resume_data),
             output_language=output_language,
         )
-    except (KeyError, IndexError, ValueError) as e:
-        # See generate_cover_letter for rationale on the exception set.
-        if not is_custom:
-            raise
-        logging.warning(
-            "Custom outreach message prompt failed to format (%s); falling back to default",
-            e,
+    else:
+        validate_source_size(job_description, MAX_JOB_CHARACTERS)
+        template, is_custom = _resolve_feature_prompt(
+            "outreach_message_prompt", OUTREACH_MESSAGE_PROMPT
         )
-        prompt = OUTREACH_MESSAGE_PROMPT.format(
-            job_description=job_description,
-            resume_data=json.dumps(resume_data),
-            output_language=output_language,
-        )
+        try:
+            prompt = template.format(
+                job_description=job_description,
+                resume_data=json.dumps(resume_data),
+                output_language=output_language,
+            )
+        except (KeyError, IndexError, ValueError) as e:
+            if not is_custom:
+                raise
+            logging.warning(
+                "Custom outreach message prompt failed to format (%s); falling back to default",
+                e,
+            )
+            prompt = OUTREACH_MESSAGE_PROMPT.format(
+                job_description=job_description,
+                resume_data=json.dumps(resume_data),
+                output_language=output_language,
+            )
 
     result = await complete(
         prompt=prompt,

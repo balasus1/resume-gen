@@ -9,7 +9,11 @@ from app.llm import (
     get_model_name,
     get_safe_max_tokens,
 )
-from app.prompts import INTERVIEW_PREP_PROMPT, get_language_name
+from app.prompts import (
+    GENERIC_INTERVIEW_PREP_PROMPT,
+    INTERVIEW_PREP_PROMPT,
+    get_language_name,
+)
 from app.schemas import InterviewPrepData
 
 
@@ -100,18 +104,24 @@ def _serialize_resume_data_for_prompt(resume_data: dict[str, Any]) -> str:
 
 async def generate_interview_prep(
     resume_data: dict[str, Any],
-    job_description: str,
+    job_description: str | None = None,
     language: str = "en",
 ) -> InterviewPrepData:
-    """Generate structured interview preparation for a tailored resume."""
-    prompt = INTERVIEW_PREP_PROMPT.format(
-        job_description=_truncate_text_for_prompt(
-            job_description,
-            _JOB_DESCRIPTION_PROMPT_CHAR_LIMIT,
-        ),
-        resume_data=_serialize_resume_data_for_prompt(resume_data),
-        output_language=get_language_name(language),
-    )
+    """Generate structured interview preparation for a resume."""
+    if not job_description or not job_description.strip():
+        prompt = GENERIC_INTERVIEW_PREP_PROMPT.format(
+            resume_data=_serialize_resume_data_for_prompt(resume_data),
+            output_language=get_language_name(language),
+        )
+    else:
+        prompt = INTERVIEW_PREP_PROMPT.format(
+            job_description=_truncate_text_for_prompt(
+                job_description,
+                _JOB_DESCRIPTION_PROMPT_CHAR_LIMIT,
+            ),
+            resume_data=_serialize_resume_data_for_prompt(resume_data),
+            output_language=get_language_name(language),
+        )
     config = get_llm_config()
     max_tokens = get_safe_max_tokens(
         get_model_name(config),

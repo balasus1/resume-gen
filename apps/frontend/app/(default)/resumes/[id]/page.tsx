@@ -23,6 +23,8 @@ import {
   Sparkles,
   Pencil,
   MessagesSquare,
+  FileText,
+  Mail,
 } from 'lucide-react';
 import { EnrichmentModal } from '@/components/enrichment/enrichment-modal';
 import { useTranslations } from '@/lib/i18n';
@@ -185,6 +187,14 @@ export default function ResumeViewerPage() {
 
   const handleEdit = () => {
     router.push(`/builder?id=${resumeId}`);
+  };
+
+  const handleCoverLetter = () => {
+    router.push(`/builder?id=${resumeId}&tab=cover-letter`);
+  };
+
+  const handleOutreach = () => {
+    router.push(`/builder?id=${resumeId}&tab=outreach`);
   };
 
   const handleInterviewPrep = () => {
@@ -462,12 +472,18 @@ export default function ResumeViewerPage() {
               <Edit className="w-4 h-4" />
               {t('dashboard.editResume')}
             </Button>
-            {isTailoredResume && (
-              <Button variant="outline" onClick={handleInterviewPrep}>
-                <MessagesSquare className="w-4 h-4" />
-                {t('interviewPrep.title')}
-              </Button>
-            )}
+            <Button variant="outline" onClick={handleCoverLetter}>
+              <FileText className="w-4 h-4" />
+              {t('coverLetter.title')}
+            </Button>
+            <Button variant="outline" onClick={handleOutreach}>
+              <Mail className="w-4 h-4" />
+              {t('outreach.title')}
+            </Button>
+            <Button variant="outline" onClick={handleInterviewPrep}>
+              <MessagesSquare className="w-4 h-4" />
+              {t('interviewPrep.title')}
+            </Button>
             <Button variant="success" onClick={handleDownload} disabled={isDownloading}>
               <Download className="w-4 h-4" />
               {isDownloading ? t('common.generating') : t('resumeViewer.downloadResume')}

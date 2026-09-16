@@ -1279,14 +1279,13 @@ const ResumeBuilderContent = () => {
   const canGenerateInterviewPrep =
     Boolean(resumeId) &&
     loadingState === 'loaded' &&
-    isTailoredResume &&
-    jobContextStatus === 'available';
+    (!isTailoredResume || jobContextStatus === 'available');
 
   const interviewPrepUnavailableMessage = !resumeId
     ? t('interviewPrep.saveRequiredDescription')
-    : jobContextStatus === 'loading'
+    : isTailoredResume && jobContextStatus === 'loading'
       ? t('interviewPrep.loadingContextDescription')
-      : jobContextStatus === 'missing'
+      : isTailoredResume && jobContextStatus === 'missing'
         ? t('interviewPrep.missingContextDescription')
         : null;
 
@@ -1380,21 +1379,21 @@ const ResumeBuilderContent = () => {
   return (
     <div className="h-screen w-full bg-background flex justify-center items-center p-4 md:p-8">
       {/* Main Container */}
-      <div className="w-full h-full max-w-[90%] md:max-w-[95%] xl:max-w-[1800px] border border-black bg-background shadow-sw-lg flex flex-col">
+      <div className="w-full h-full max-w-[90%] md:max-w-[95%] xl:max-w-[1800px] border border-white/10 bg-background shadow-sw-lg flex flex-col">
         {/* Header Section */}
-        <div className="border-b border-black p-6 md:p-8 bg-background no-print">
+        <div className="border-b border-white/10 p-6 md:p-8 bg-background no-print">
           {/* Top Row: Back button and Actions */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <div>
-              <Button variant="link" onClick={handleBackToDashboard} className="mb-2 -ml-1">
+              <Button variant="link" onClick={handleBackToDashboard} className="mb-2 -ml-1 text-zinc-300 hover:text-white">
                 <ArrowLeft className="w-4 h-4" />
                 {t('nav.backToDashboard')}
               </Button>
-              <h1 className="font-serif text-3xl md:text-5xl text-black tracking-tight leading-[0.95] uppercase">
+              <h1 className="font-serif text-3xl md:text-5xl text-white tracking-tight leading-[0.95] uppercase">
                 {t('nav.builder')}
               </h1>
               <div className="mt-3 flex items-center gap-3">
-                <p className="text-sm font-mono text-blue-700 uppercase tracking-wide font-bold">
+                <p className="text-sm font-mono text-blue-400 uppercase tracking-wide font-bold">
                   {'// '}
                   {resumeId ? t('builder.editMode') : t('builder.createAndPreview')}
                 </p>
@@ -1542,9 +1541,9 @@ const ResumeBuilderContent = () => {
           {/* Left Panel: Editor */}
           <div className="bg-background p-6 md:p-8 overflow-y-auto no-print">
             <div className="max-w-3xl mx-auto space-y-6">
-              <div className="flex items-center gap-2 border-b-2 border-black pb-2">
-                <div className="w-3 h-3 bg-blue-700"></div>
-                <h2 className="font-mono text-lg font-bold uppercase tracking-wider">
+              <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                <div className="w-3 h-3 bg-blue-500"></div>
+                <h2 className="font-mono text-lg font-bold uppercase tracking-wider text-white">
                   {activeTab === 'resume' && t('builder.leftPanel.editorPanel')}
                   {activeTab === 'cover-letter' && t('builder.leftPanel.coverLetterEditor')}
                   {activeTab === 'outreach' && t('builder.leftPanel.outreachEditor')}
@@ -1625,20 +1624,20 @@ const ResumeBuilderContent = () => {
               {/* JD Match Info Panel */}
               {activeTab === 'jd-match' && (
                 <div className="space-y-4">
-                  <div className="border-2 border-black bg-white p-4">
-                    <h3 className="font-mono text-sm font-bold uppercase mb-2">
+                  <div className="border border-white/10 bg-[#27272a] p-4 text-white shadow-sw-xs">
+                    <h3 className="font-mono text-sm font-bold uppercase mb-2 text-white">
                       {t('builder.jdMatch.aboutTitle')}
                     </h3>
-                    <p className="text-sm text-ink-soft leading-relaxed">
+                    <p className="text-sm text-zinc-300 leading-relaxed">
                       {t('builder.jdMatch.aboutDescription')}
                     </p>
                   </div>
 
-                  <div className="border-2 border-black bg-background p-4">
-                    <h3 className="font-mono text-sm font-bold uppercase mb-2">
+                  <div className="border border-white/10 bg-[#1e1e20] p-4 text-white">
+                    <h3 className="font-mono text-sm font-bold uppercase mb-2 text-white">
                       {t('builder.jdMatch.highlightedKeywordsTitle')}
                     </h3>
-                    <p className="text-sm text-ink-soft leading-relaxed">
+                    <p className="text-sm text-zinc-300 leading-relaxed">
                       {(() => {
                         const template = t(
                           'builder.jdMatch.highlightedKeywordsDescriptionTemplate'
@@ -1648,7 +1647,7 @@ const ResumeBuilderContent = () => {
                         return (
                           <>
                             {parts[0]}
-                            <mark className="bg-yellow-200 px-1">
+                            <mark className="bg-yellow-200 px-1 text-black font-medium">
                               {t('builder.jdMatch.highlightColor')}
                             </mark>
                             {parts.slice(1).join('__COLOR__')}
@@ -1658,11 +1657,11 @@ const ResumeBuilderContent = () => {
                     </p>
                   </div>
 
-                  <div className="border-2 border-black bg-white p-4">
-                    <h3 className="font-mono text-sm font-bold uppercase mb-2">
+                  <div className="border border-white/10 bg-[#27272a] p-4 text-white shadow-sw-xs">
+                    <h3 className="font-mono text-sm font-bold uppercase mb-2 text-white">
                       {t('builder.jdMatch.tipsTitle')}
                     </h3>
-                    <ul className="text-sm text-ink-soft space-y-1 list-disc list-inside">
+                    <ul className="text-sm text-zinc-300 space-y-1 list-disc list-inside">
                       <li>{t('builder.jdMatch.tips.items.addMissingKeywords')}</li>
                       <li>{t('builder.jdMatch.tips.items.focusTechnicalSkills')}</li>
                       <li>{t('builder.jdMatch.tips.items.matchActionVerbs')}</li>
@@ -1683,22 +1682,22 @@ const ResumeBuilderContent = () => {
                   {
                     id: 'cover-letter',
                     label: t('builder.previewTabs.coverLetter'),
-                    disabled: !coverLetter,
+                    disabled: false,
                   },
                   {
                     id: 'outreach',
                     label: t('builder.previewTabs.outreach'),
-                    disabled: !outreachMessage,
+                    disabled: false,
                   },
                   {
                     id: 'interview-prep',
                     label: t('builder.previewTabs.interviewPrep'),
-                    disabled: !isTailoredResume,
+                    disabled: false,
                   },
                   {
                     id: 'jd-match',
                     label: t('builder.previewTabs.jdMatch'),
-                    disabled: !jobDescription,
+                    disabled: !isTailoredResume || !jobDescription,
                   },
                 ]}
                 activeTab={activeTab}

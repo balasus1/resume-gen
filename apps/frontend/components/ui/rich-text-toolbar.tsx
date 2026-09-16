@@ -50,7 +50,7 @@ export const RichTextToolbar: React.FC<RichTextToolbarProps> = ({ editor, onLink
   ];
 
   return (
-    <div className="flex items-center gap-1 p-1 border border-black bg-secondary">
+    <div className="flex items-center gap-1 p-1 border border-white/10 bg-[#27272a]">
       {tools.map((tool) => (
         <Button
           key={tool.label}
@@ -65,8 +65,8 @@ export const RichTextToolbar: React.FC<RichTextToolbarProps> = ({ editor, onLink
           aria-pressed={tool.isActive}
           title={`${tool.label} (${tool.shortcut})`}
           className={cn(
-            'h-7 w-7 rounded-none',
-            tool.isActive && 'bg-blue-700 text-white hover:bg-blue-800 hover:text-white'
+            'h-7 w-7 rounded-none text-zinc-300 hover:text-white hover:bg-white/10',
+            tool.isActive && 'bg-blue-600 text-white hover:bg-blue-700 hover:text-white'
           )}
         >
           <tool.icon className="w-4 h-4" />
